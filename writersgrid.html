@@ -1,0 +1,1793 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="true" />
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet" />
+  <style>
+    html { scroll-behavior: smooth; }
+    body { margin: 0; }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-thumb { background: #e2dbd0; border-radius: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    @keyframes wg-fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  </style>
+</helmet>
+<template id="__bundler_thumbnail">
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100" height="100" fill="#f3e6df"></rect>
+    <g transform="translate(30,30)" fill="none" stroke="#c06a4c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="0" y="2" width="40" height="36" rx="4" fill="#fffdfa"></rect>
+      <line x1="8" y1="12" x2="32" y2="12"></line>
+      <line x1="8" y1="20" x2="32" y2="20"></line>
+      <line x1="8" y1="28" x2="24" y2="28"></line>
+    </g>
+  </svg>
+</template>
+
+<div style="background:#f7f4ee;min-height:100vh;color:#2c2823;font-family:'Zen Kaku Gothic New',system-ui,sans-serif;-webkit-font-smoothing:antialiased;">
+
+  <header style="position:sticky;top:0;z-index:30;background:rgba(247,244,238,0.9);backdrop-filter:blur(6px);border-bottom:1px solid #e9e2d8;">
+    <div style="max-width:1100px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:16px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-right:auto;">
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(192,106,76,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <span style="font-family:'Zen Maru Gothic',sans-serif;color:#c06a4c;font-size:17px;">✎</span>
+        </div>
+        <div>
+          <h1 style="font-family:'Zen Maru Gothic',sans-serif;font-size:17px;line-height:1;margin:0;letter-spacing:-0.01em;">The Auto-Didact Writer's Grid</h1>
+          <p style="font-size:12px;color:#8c8378;margin:4px 0 0;">{{ headerDateText }}</p>
+        </div>
+      </div>
+      <nav style="display:flex;align-items:center;gap:2px;background:#fffdfa;border:1px solid #e9e2d8;border-radius:999px;padding:4px;flex-shrink:0;">
+        <button onClick="{{ setTabDay }}" style="{{ tabDayStyle }}">Day</button>
+        <button onClick="{{ setTabWeek }}" style="{{ tabWeekStyle }}">Week</button>
+        <button onClick="{{ setTabRoadmap }}" style="{{ tabRoadmapStyle }}">Roadmap</button>
+      </nav>
+    </div>
+  </header>
+
+  <sc-if value="{{ vacActive }}" hint-placeholder-val="{{ false }}">
+    <div style="background:rgba(181,136,63,0.1);border-bottom:1px solid rgba(181,136,63,0.3);">
+      <div style="max-width:1100px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:12px;font-size:13px;flex-wrap:wrap;">
+        <span style="font-family:'Zen Maru Gothic',sans-serif;color:#b5883f;font-size:13px;">Vacation Mode</span>
+        <span style="color:rgba(44,40,35,0.8);">{{ vacBannerText }}</span>
+        <button onClick="{{ endVacationNow }}" style="margin-left:auto;font-size:12px;padding:5px 12px;border-radius:999px;border:1px solid rgba(181,136,63,0.4);color:#b5883f;background:transparent;cursor:pointer;">End now</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <div style="background:#fffdfa;border-bottom:1px solid #e9e2d8;">
+    <div style="max-width:1100px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:baseline;gap:7px;">
+        <span style="font-family:'Zen Maru Gothic',sans-serif;font-size:22px;color:#c06a4c;line-height:1;">{{ scenesDeconstructed }}</span>
+        <span style="font-size:12px;color:#8c8378;">Scenes deconstructed</span>
+      </div>
+      <div style="width:1px;height:22px;background:#e9e2d8;"></div>
+      <div style="display:flex;align-items:baseline;gap:7px;">
+        <span style="font-family:'Zen Maru Gothic',sans-serif;font-size:22px;color:#6f8a67;line-height:1;">{{ schemasMastered }}</span>
+        <span style="font-size:12px;color:#8c8378;">Schemas mastered</span>
+      </div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:16px;">
+        <div style="text-align:right;line-height:1.2;">
+          <p style="font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:#8c8378;margin:0;">Current focus</p>
+          <p style="font-size:13px;font-weight:500;margin:2px 0 0;">{{ moduleFocus }}</p>
+        </div>
+        <span style="{{ modePillStyle }}">{{ modeLabel }}</span>
+      </div>
+    </div>
+  </div>
+
+  <main style="max-width:1100px;margin:0 auto;padding:24px 20px;">
+
+    <sc-if value="{{ isDayTab }}" hint-placeholder-val="{{ true }}">
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px;">
+        <div style="min-width:0;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+            <button onClick="{{ navDayPrev }}" style="width:32px;height:32px;border-radius:8px;border:1px solid #e9e2d8;background:#fffdfa;color:#8c8378;cursor:pointer;font-size:16px;">‹</button>
+            <div style="flex:1;min-width:0;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <h2 style="font-family:'Zen Maru Gothic',sans-serif;font-size:19px;margin:0;">{{ dayHeading }}</h2>
+                <sc-if value="{{ isToday }}" hint-placeholder-val="{{ true }}"><span style="font-size:11px;padding:2px 8px;border-radius:999px;background:rgba(192,106,76,0.1);color:#c06a4c;">now</span></sc-if>
+                <sc-if value="{{ isPastDay }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;padding:2px 8px;border-radius:999px;background:#e9e2d8;color:#8c8378;">past</span></sc-if>
+              </div>
+              <p style="font-size:12px;color:#8c8378;margin:2px 0 0;">{{ dayDateLong }} · {{ budgetLabel }}</p>
+            </div>
+            <button onClick="{{ navDayNext }}" style="width:32px;height:32px;border-radius:8px;border:1px solid #e9e2d8;background:#fffdfa;color:#8c8378;cursor:pointer;font-size:16px;flex-shrink:0;">›</button>
+            <button onClick="{{ goToday }}" style="{{ todayBtnStyle }}">Today</button>
+          </div>
+
+          <sc-if value="{{ showCapBanner }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;padding:14px 18px;border-radius:12px;background:#f2e9d5;border:1px solid rgba(181,136,63,0.35);">
+              <span style="font-family:'Zen Maru Gothic',sans-serif;font-size:22px;font-weight:700;line-height:1;color:#8a6a2f;white-space:nowrap;flex-shrink:0;">30 Min Max</span>
+              <div style="width:1px;height:30px;background:rgba(181,136,63,0.4);flex-shrink:0;"></div>
+              <div style="flex:1;min-width:0;">
+                <p style="font-size:14px;font-weight:600;margin:0;color:#8a6a2f;">{{ roleLabel }}</p>
+                <p style="font-size:12px;color:#9a8a6a;margin:2px 0 0;">Daily session cap — one focused block, then stop.</p>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isRestDay }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:16px;border-radius:12px;background:#e9e2d8;color:#8c8378;font-size:14px;">Weekend rest day — no scheduled tasks.</div>
+          </sc-if>
+
+          <sc-if value="{{ isVacationDay }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:16px;border-radius:12px;background:rgba(181,136,63,0.1);border:1px solid rgba(181,136,63,0.25);font-size:13px;color:rgba(44,40,35,0.75);margin-bottom:12px;">🌴 Vacation day — the schedule is paused and shifts forward. {{ vacMaintNote }}</div>
+        </sc-if>
+
+          <sc-if value="{{ isPastDay }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-bottom:12px;padding:10px 14px;border-radius:10px;background:#f3e6df;border:1px solid rgba(192,106,76,0.2);font-size:12px;color:rgba(44,40,35,0.75);">Viewing a past day. Anything left unchecked has already cascaded forward. Check items here to log them retroactively — the future recalculates instantly.</div>
+          </sc-if>
+
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <sc-for list="{{ dayTasks }}" as="task" hint-placeholder-count="3">
+              <div onClick="{{ task.onToggle }}" style="{{ task.rowStyle }}">
+                <div style="{{ task.boxStyle }}">
+                  <sc-if value="{{ task.checked }}" hint-placeholder-val="{{ false }}"><span style="color:#fffdfa;font-size:11px;">✓</span></sc-if>
+                </div>
+                <div style="min-width:0;flex:1;">
+                  <span style="{{ task.tagStyle }}">{{ task.tag }}</span>
+                  <p style="{{ task.titleStyle }}">{{ task.title }}</p>
+                  <sc-if value="{{ task.hasSub }}" hint-placeholder-val="{{ false }}"><p style="font-size:12px;color:#8c8378;margin:3px 0 0;">{{ task.sub }}</p></sc-if>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+
+          <sc-if value="{{ showPromptStation }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:20px;padding:16px;border-radius:14px;background:#fffdfa;border:1px solid #e9e2d8;">
+              <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:#8c8378;margin:0 0 8px;">Prompt Clipboard Station</p>
+              <pre style="white-space:pre-wrap;font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.55;background:#f7f4ee;border:1px solid #e9e2d8;border-radius:10px;padding:12px;max-height:260px;overflow-y:auto;margin:0 0 10px;">{{ promptText }}</pre>
+              <button onClick="{{ copyPrompt }}" style="width:100%;padding:11px;border-radius:10px;background:#c06a4c;color:#fffdfa;border:none;font-weight:500;font-size:14px;cursor:pointer;">Copy Prompt</button>
+            </div>
+          </sc-if>
+        </div>
+
+        <aside style="display:flex;flex-direction:column;gap:14px;">
+          <div style="background:#fffdfa;border:1px solid #e9e2d8;border-radius:16px;padding:18px;">
+            <p style="font-size:12px;color:#8c8378;margin:0 0 4px;">Today's progress</p>
+            <div style="display:flex;align-items:flex-end;gap:6px;">
+              <span style="font-family:'Zen Maru Gothic',sans-serif;font-size:28px;">{{ doneCount }}<span style="color:#8c8378;font-size:17px;">/{{ totalCount }}</span></span>
+              <span style="font-size:13px;color:#8c8378;margin-bottom:4px;">tasks</span>
+            </div>
+            <div style="height:8px;border-radius:999px;background:#e9e2d8;margin-top:10px;overflow:hidden;">
+              <div style="height:100%;background:#6f8a67;width:{{ progressPct }};"></div>
+            </div>
+          </div>
+          <div style="background:#fffdfa;border:1px solid #e9e2d8;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px;">
+            <div>
+              <p style="font-size:12px;color:#8c8378;margin:0;">Artist's Way Workbook</p>
+              <p style="font-family:'Zen Maru Gothic',sans-serif;font-size:15px;margin:2px 0 0;">Week {{ currentAWWeek }} <span style="font-family:'Zen Kaku Gothic New',sans-serif;font-size:13px;color:#8c8378;">— {{ currentAWTheme }}</span></p>
+            </div>
+            <div style="border-top:1px solid #e9e2d8;padding-top:12px;">
+              <p style="font-size:12px;color:#8c8378;margin:0 0 6px;">Currently working on <span style="color:#c9c0b3;">· Meander, Spiral, Explode</span></p>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <button onClick="{{ focusPrevCh }}" style="{{ focusPrevStyle }}">‹</button>
+                <div style="flex:1;min-width:0;text-align:center;">
+                  <p style="font-family:'Zen Maru Gothic',sans-serif;font-size:15px;margin:0;">Ch. {{ focusChapterNum }}</p>
+                  <p style="font-family:'Zen Kaku Gothic New',sans-serif;font-size:11px;color:#8c8378;margin:1px 0 0;text-wrap:pretty;">{{ focusChapterName }}</p>
+                </div>
+                <button onClick="{{ focusNextCh }}" style="{{ focusNextStyle }}">›</button>
+              </div>
+              <p style="font-size:11px;color:#8c8378;margin:8px 0 0;line-height:1.45;text-wrap:pretty;">Jump to any chapter — earlier unfinished tasks stay in the roadmap for whenever you circle back.</p>
+              <sc-if value="{{ isManualFocus }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ clearFocus }}" style="margin-top:8px;font-size:11px;padding:5px 10px;border-radius:8px;border:1px solid #e9e2d8;background:#fffdfa;color:#8c8378;cursor:pointer;">↺ Resume automatic order</button>
+              </sc-if>
+            </div>
+          </div>
+          <div style="background:#fffdfa;border:1px solid #e9e2d8;border-radius:16px;padding:18px;">
+            <p style="font-size:12px;color:#8c8378;margin:0 0 8px;">Weekly rhythm</p>
+            <div style="font-size:12.5px;display:flex;flex-direction:column;gap:6px;color:rgba(44,40,35,0.8);">
+              <div style="display:flex;justify-content:space-between;"><span>Mon</span><span style="color:#8c8378;">30m · Reading + Notes</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>Tue</span><span style="color:#8c8378;">30m · AW Reflection</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>Wed</span><span style="color:#8c8378;">30m · X-Ray</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>Thu</span><span style="color:#8c8378;">30m · Pattern Hunt</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>Fri</span><span style="color:#8c8378;">30m · Integration</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>Sat / Sun</span><span style="color:#8c8378;">Rest</span></div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isWeekTab }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:6px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <button onClick="{{ weekPrev }}" style="width:32px;height:32px;border-radius:8px;border:1px solid #e9e2d8;background:#fffdfa;color:#8c8378;cursor:pointer;font-size:16px;flex-shrink:0;">‹</button>
+            <h2 style="font-family:'Zen Maru Gothic',sans-serif;font-size:19px;margin:0;">This week</h2>
+            <button onClick="{{ weekNext }}" style="width:32px;height:32px;border-radius:8px;border:1px solid #e9e2d8;background:#fffdfa;color:#8c8378;cursor:pointer;font-size:16px;flex-shrink:0;">›</button>
+            <button onClick="{{ weekGoToday }}" style="{{ weekTodayBtnStyle }}">This week</button>
+          </div>
+          <p style="font-size:12px;color:#8c8378;margin:0;">{{ weekRangeLabel }} · tap any chip to check off</p>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px;">
+          <sc-for list="{{ weekDays }}" as="wd" hint-placeholder-count="7">
+            <div style="{{ wd.colStyle }}">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <div>
+                  <p style="{{ wd.dayLabelStyle }}">{{ wd.dayName }}</p>
+                  <p style="font-size:11px;color:#8c8378;margin:0;">{{ wd.dateShort }}</p>
+                </div>
+                <span style="{{ wd.typeBadgeStyle }}">{{ wd.typeBadge }}</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <sc-for list="{{ wd.chips }}" as="chip" hint-placeholder-count="2">
+                  <button onClick="{{ chip.onToggle }}" style="{{ chip.style }}">{{ chip.label }}</button>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isRoadmapTab }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <h2 style="font-family:'Zen Maru Gothic',sans-serif;font-size:19px;margin:0 0 16px;">Curriculum roadmap</h2>
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;">
+          <div>
+            <h3 style="font-family:'Zen Maru Gothic',sans-serif;font-size:12px;text-transform:uppercase;letter-spacing:0.05em;color:#8c8378;margin:0 0 10px;">Artist's Way Workbook · Warm-Up</h3>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <sc-for list="{{ awRoadmap }}" as="w" hint-placeholder-count="4">
+                <div style="{{ w.cardStyle }}">
+                  <div style="{{ w.headerStyle }}">
+                    <div style="{{ w.numStyle }}">{{ w.week }}</div>
+                    <div style="flex:1;min-width:0;">
+                      <p style="margin:0;font-weight:500;font-size:14px;">Week {{ w.week }} <span style="color:#8c8378;font-weight:400;">· {{ w.theme }}</span></p>
+                      <p style="font-size:11px;color:#8c8378;margin:2px 0 0;">{{ w.progressLabel }}</p>
+                    </div>
+                    <button onClick="{{ w.onSetCurrent }}" style="{{ w.setBtnStyle }}">{{ w.setBtnLabel }}</button>
+                  </div>
+                  <div style="padding:0 14px 12px;">
+                    <sc-for list="{{ w.items }}" as="it" hint-placeholder-count="3">
+                      <div style="{{ it.rowStyle }}">
+                        <div onClick="{{ it.onToggle }}" style="{{ it.boxStyle }}"><sc-if value="{{ it.checked }}" hint-placeholder-val="{{ false }}"><span style="color:#fffdfa;font-size:9px;">✓</span></sc-if></div>
+                        <div onClick="{{ it.onSetCurrent }}" style="{{ it.labelWrapStyle }}">
+                          <span style="{{ it.labelStyle }}">{{ it.label }}</span>
+                          <sc-if value="{{ it.isFocusItem }}" hint-placeholder-val="{{ false }}"><span style="font-size:10px;color:#c06a4c;margin-left:6px;font-weight:600;">★ current</span></sc-if>
+                          <sc-if value="{{ it.hasSub }}" hint-placeholder-val="{{ false }}"><p style="font-size:11px;color:#8c8378;margin:2px 0 0;">{{ it.sub }}</p></sc-if>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div>
+            <h3 style="font-family:'Zen Maru Gothic',sans-serif;font-size:12px;text-transform:uppercase;letter-spacing:0.05em;color:#8c8378;margin:0 0 10px;">Meander, Spiral, Explode · Deep Core (Analytical)</h3>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <sc-for list="{{ meanderRoadmap }}" as="c" hint-placeholder-count="4">
+                <div style="{{ c.cardStyle }}">
+                  <div style="{{ c.headerStyle }}">
+                    <div style="{{ c.numStyle }}">{{ c.chapter }}</div>
+                    <div style="flex:1;min-width:0;">
+                      <p style="margin:0;font-weight:500;font-size:14px;">Ch. {{ c.chapter }} <span style="color:#8c8378;font-weight:400;">· {{ c.name }}</span></p>
+                      <p style="font-size:11px;color:#8c8378;margin:2px 0 0;">{{ c.progressLabel }}</p>
+                    </div>
+                    <button onClick="{{ c.onSetCurrent }}" style="{{ c.setBtnStyle }}">{{ c.setBtnLabel }}</button>
+                  </div>
+                  <div style="padding:0 14px 12px;">
+                    <sc-for list="{{ c.items }}" as="it" hint-placeholder-count="4">
+                      <div style="{{ it.rowStyle }}">
+                        <div onClick="{{ it.onToggle }}" style="{{ it.boxStyle }}"><sc-if value="{{ it.checked }}" hint-placeholder-val="{{ false }}"><span style="color:#fffdfa;font-size:9px;">✓</span></sc-if></div>
+                        <div onClick="{{ it.onSetCurrent }}" style="{{ it.labelWrapStyle }}">
+                          <span style="{{ it.labelStyle }}">{{ it.label }}</span>
+                          <sc-if value="{{ it.isFocusItem }}" hint-placeholder-val="{{ false }}"><span style="font-size:10px;color:#c06a4c;margin-left:6px;font-weight:600;">★ current</span></sc-if>
+                          <sc-if value="{{ it.hasSub }}" hint-placeholder-val="{{ false }}"><p style="font-size:11px;color:#8c8378;margin:2px 0 0;">{{ it.sub }}</p></sc-if>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+  </main>
+
+  <footer style="border-top:1px solid #e9e2d8;margin-top:32px;">
+    <div style="max-width:1100px;margin:0 auto;padding:16px 20px;display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:13px;">
+      <button onClick="{{ openVacationModal }}" style="padding:7px 14px;border-radius:10px;border:1px solid #e9e2d8;background:#fffdfa;cursor:pointer;color:#2c2823;">🌴 Vacation Mode</button>
+      <button onClick="{{ openRetroModal }}" style="padding:7px 14px;border-radius:10px;border:1px solid #e9e2d8;background:#fffdfa;cursor:pointer;color:#2c2823;">📆 Log a past day</button>
+      <button onClick="{{ openSettingsModal }}" style="padding:7px 14px;border-radius:10px;border:1px solid #e9e2d8;background:#fffdfa;cursor:pointer;color:#2c2823;">⚙ Upload syllabus</button>
+      <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+        <button onClick="{{ exportProgress }}" style="padding:7px 14px;border-radius:10px;border:1px solid #e9e2d8;background:#fffdfa;cursor:pointer;color:#2c2823;">Export</button>
+        <label style="padding:7px 14px;border-radius:10px;border:1px solid #e9e2d8;background:#fffdfa;cursor:pointer;color:#2c2823;">Import<input type="file" accept="application/json" style="display:none;" onChange="{{ importProgress }}" /></label>
+        <button onClick="{{ resetAll }}" style="padding:7px 14px;border-radius:10px;border:1px solid #e9e2d8;background:#fffdfa;cursor:pointer;color:#8c8378;">Reset</button>
+      </div>
+    </div>
+    <div style="max-width:1100px;margin:0 auto;padding:0 20px 16px;font-size:11px;color:rgba(140,131,120,0.8);line-height:1.5;">
+      Curriculum: The Artist's Way Workbook (Julia Cameron) · Meander, Spiral, Explode (Jane Alison) · Fiction Writer's Workshop (Josip Novakovich). Chapter/week structure only — upload your own drill specs anytime via Upload Syllabus.
+    </div>
+  </footer>
+
+  <sc-if value="{{ modalOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:16px;">
+      <div onClick="{{ closeModal }}" style="position:absolute;inset:0;background:rgba(44,40,35,0.3);backdrop-filter:blur(2px);"></div>
+      <div style="position:relative;background:#fffdfa;border:1px solid #e9e2d8;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.18);width:100%;max-width:540px;max-height:85vh;overflow-y:auto;">
+
+        <sc-if value="{{ isVacationModal }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:24px;">
+            <h3 style="font-family:'Zen Maru Gothic',sans-serif;font-size:17px;margin:0 0 4px;">🌴 Vacation Mode</h3>
+            <p style="font-size:13px;color:#8c8378;margin:0 0 16px;line-height:1.5;">Pause daily generation for a date range. Warm-up and deep core shift forward by exactly the days used, preserving your pace.</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <label style="font-size:12px;color:#8c8378;">Start<input type="date" value="{{ vacStartInput }}" onChange="{{ setVacStart }}" style="display:block;margin-top:4px;width:100%;padding:8px 10px;border-radius:8px;border:1px solid #e9e2d8;background:#f7f4ee;box-sizing:border-box;font-family:inherit;" /></label>
+              <label style="font-size:12px;color:#8c8378;">End<input type="date" value="{{ vacEndInput }}" onChange="{{ setVacEnd }}" style="display:block;margin-top:4px;width:100%;padding:8px 10px;border-radius:8px;border:1px solid #e9e2d8;background:#f7f4ee;box-sizing:border-box;font-family:inherit;" /></label>
+            </div>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;margin-top:12px;">
+              <input type="checkbox" checked="{{ vacMaintInput }}" onChange="{{ toggleVacMaintInput }}" />
+              Pause optional maintenance journaling during vacation too
+            </label>
+            <button onClick="{{ addVacation }}" style="margin-top:16px;width:100%;padding:10px;border-radius:10px;background:#b5883f;color:#fffdfa;border:none;font-weight:500;cursor:pointer;">Add vacation</button>
+            <div style="border-top:1px solid #e9e2d8;margin-top:18px;padding-top:14px;">
+              <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.04em;color:#8c8378;margin:0 0 6px;">Scheduled</p>
+              <sc-for list="{{ vacationList }}" as="v" hint-placeholder-count="1">
+                <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;padding:6px 0;">
+                  <span>{{ v.label }}</span>
+                  <button onClick="{{ v.onRemove }}" style="font-size:12px;color:#c06a4c;background:none;border:none;cursor:pointer;">remove</button>
+                </div>
+              </sc-for>
+              <sc-if value="{{ noVacations }}" hint-placeholder-val="{{ true }}"><p style="font-size:13px;color:#8c8378;margin:6px 0 0;">No vacations scheduled.</p></sc-if>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isRetroModal }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:24px;">
+            <h3 style="font-family:'Zen Maru Gothic',sans-serif;font-size:17px;margin:0 0 4px;">📆 Log a past day</h3>
+            <p style="font-size:13px;color:#8c8378;margin:0 0 14px;line-height:1.5;">Pick the date you actually worked, tick what you completed, and the future schedule recalculates instantly.</p>
+            <label style="font-size:12px;color:#8c8378;">Date completed<input type="date" value="{{ retroDateInput }}" onChange="{{ setRetroDate }}" style="display:block;margin-top:4px;width:100%;padding:8px 10px;border-radius:8px;border:1px solid #e9e2d8;background:#f7f4ee;box-sizing:border-box;font-family:inherit;" /></label>
+            <div style="margin-top:14px;display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto;">
+              <sc-for list="{{ retroUpcoming }}" as="r" hint-placeholder-count="6">
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 0;">
+                  <input type="checkbox" checked="{{ r.checked }}" onChange="{{ r.onToggle }}" />
+                  <span>{{ r.label }}</span>
+                </label>
+              </sc-for>
+            </div>
+            <button onClick="{{ applyRetro }}" style="margin-top:16px;width:100%;padding:10px;border-radius:10px;background:#c06a4c;color:#fffdfa;border:none;font-weight:500;cursor:pointer;">Log &amp; recalculate</button>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isSettingsModal }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:24px;">
+            <h3 style="font-family:'Zen Maru Gothic',sans-serif;font-size:17px;margin:0 0 4px;">⚙ Upload syllabus &amp; drills</h3>
+            <p style="font-size:13px;color:#8c8378;margin:0 0 16px;line-height:1.5;">This tracker doesn't know your books' real contents on its own — don't hand-write JSON yourself. There are two prompts below; run either or both in a Claude chat, then upload whatever Claude gives you back (you can upload as many times as you like, one track at a time).</p>
+
+            <div style="padding:14px;border:1px solid #e9e2d8;border-radius:12px;margin-bottom:12px;">
+              <p style="font-size:13px;font-weight:500;margin:0 0 4px;">1. Chapter syllabus</p>
+              <p style="font-size:12px;color:#8c8378;margin:0 0 10px;line-height:1.45;">Defines which weeks/chapters exist. Paste your book or its table of contents into Claude with this prompt.</p>
+              <button onClick="{{ copySyllabusPrompt }}" style="width:100%;padding:10px;border-radius:10px;background:#c06a4c;color:#fffdfa;border:none;font-weight:500;font-size:13px;cursor:pointer;">{{ syllabusCopyLabel }}</button>
+            </div>
+
+            <div style="padding:14px;border:1px solid #e9e2d8;border-radius:12px;margin-bottom:16px;">
+              <p style="font-size:13px;font-weight:500;margin:0 0 4px;">2. Drill specs</p>
+              <p style="font-size:12px;color:#8c8378;margin:0 0 10px;line-height:1.45;">Writes each Meander chapter's analytical deconstruction angles (which technique to hunt for in existing media) plus the optional Fiction exercises — uses whatever chapters are already loaded. No original writing is ever assigned for the analytical track.</p>
+              <button onClick="{{ copyDrillsPrompt }}" style="width:100%;padding:10px;border-radius:10px;background:#6f8a67;color:#fffdfa;border:none;font-weight:500;font-size:13px;cursor:pointer;">{{ drillsCopyLabel }}</button>
+            </div>
+
+            <label style="display:block;padding:20px;border:1px dashed #e9e2d8;border-radius:12px;text-align:center;font-size:13px;color:#8c8378;cursor:pointer;">
+              Upload Claude's JSON output
+              <input type="file" accept="application/json" style="display:none;" onChange="{{ importCurriculum }}" />
+            </label>
+
+            <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.04em;color:#8c8378;margin:16px 0 6px;text-align:center;">or paste it directly</p>
+            <textarea value="{{ curriculumPasteValue }}" onChange="{{ setCurriculumPaste }}" placeholder="Paste Claude's JSON output here" style="width:100%;box-sizing:border-box;min-height:100px;padding:10px;border-radius:10px;border:1px solid #e9e2d8;background:#f7f4ee;font-family:ui-monospace,monospace;font-size:12px;color:#2c2823;resize:vertical;"></textarea>
+            <button onClick="{{ applyCurriculumPaste }}" style="margin-top:10px;width:100%;padding:10px;border-radius:10px;background:#2c2823;color:#f7f4ee;border:none;font-weight:500;font-size:13px;cursor:pointer;">Apply pasted JSON</button>
+          </div>
+        </sc-if>
+
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ toastVisible }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:60;background:#2c2823;color:#f7f4ee;font-size:13px;padding:8px 16px;border-radius:999px;">{{ toastMsg }}</div>
+  </sc-if>
+
+  <canvas ref="{{ confettiCanvasRef }}" style="position:fixed;inset:0;z-index:70;pointer-events:none;"></canvas>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+
+const LS_KEY = "writer-grid-v1";
+
+const AW_WEEKS_DEFAULT = [
+  {week:1, theme:"Recovering a Sense of Safety", exCount:10},
+  {week:2, theme:"Recovering a Sense of Identity", exCount:8},
+  {week:3, theme:"Recovering a Sense of Power", exCount:10},
+  {week:4, theme:"Recovering a Sense of Integrity", exCount:10},
+  {week:5, theme:"Recovering a Sense of Possibility", exCount:10},
+  {week:6, theme:"Recovering a Sense of Abundance", exCount:6},
+  {week:7, theme:"Recovering a Sense of Connection", exCount:7},
+  {week:8, theme:"Recovering a Sense of Strength", exCount:7},
+  {week:9, theme:"Recovering a Sense of Compassion", exCount:4},
+  {week:10, theme:"Recovering a Sense of Self-Protection", exCount:5},
+  {week:11, theme:"Recovering a Sense of Autonomy", exCount:7},
+  {week:12, theme:"Recovering a Sense of Faith", exCount:7},
+];
+const MEANDER_CHAPTERS_DEFAULT = [
+  {num:1, name:"Point, Line, Texture"},
+  {num:2, name:"Movement and Flow"},
+  {num:3, name:"Color"},
+  {num:4, name:"Waves"},
+  {num:5, name:"Wavelets"},
+  {num:6, name:"Meanders"},
+  {num:7, name:"Spirals"},
+  {num:8, name:"Radials or Explosions"},
+  {num:9, name:"Networks and Cells"},
+  {num:10, name:"Fractals"},
+  {num:11, name:"Tsunami"},
+];
+const MEANDER_DRILL_TYPES = [
+  {code:1, label:"X-Ray Scene Deconstruction", type:"Deconstruct a scene in existing media that runs on this chapter's pattern"},
+  {code:2, label:"Passage Analysis", type:"Structural breakdown of a short published excerpt"},
+  {code:3, label:"In the Wild Pattern Hunt", type:"Find 1 brilliant + 1 flat example of the technique in the wild"},
+];
+const FICTION_CHAPTERS_DEFAULT = [
+  {num:1, title:"Sources of Fiction", subtitle:"Where and how to find material"},
+  {num:2, title:"Setting", subtitle:"Evoking a vivid sense of place and time"},
+  {num:3, title:"Character", subtitle:"Inventing fictional people"},
+  {num:4, title:"Plot", subtitle:"Strategies of organization and structure"},
+  {num:5, title:"Point of View", subtitle:"Selecting the best viewpoint"},
+  {num:6, title:"Dialogue and Scene", subtitle:"Handling dramatic action"},
+  {num:7, title:"Beginnings and Endings", subtitle:"Options for opening and closing"},
+  {num:8, title:"Description and Word Choice", subtitle:"Effective detail and style"},
+  {num:9, title:"Voice", subtitle:"Narrative voice and character voices"},
+  {num:10, title:"Revision", subtitle:"Polishing the draft"},
+];
+const FICTION_TASK_TYPES = [
+  {code:1, label:"Exercise 1", type:"extraction"},
+  {code:2, label:"Exercise 2", type:"apply"},
+];
+const HORIZON_DAYS = 400;
+
+function iso(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function parseISO(s){ const [y,m,d]=s.split("-").map(Number); return new Date(y,m-1,d); }
+function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
+function todayISO(){ return iso(new Date()); }
+function dow(d){ return (typeof d==="string"?parseISO(d):d).getDay(); }
+function fmtLong(s){ return parseISO(s).toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"}); }
+function fmtShort(s){ return parseISO(s).toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"}); }
+function daysBetween(a,b){ return Math.round((parseISO(b)-parseISO(a))/86400000); }
+function dayRole(d){ const w=dow(d); return w===1?"read":w===2?"reflect":w===3?"xray":w===4?"hunt":w===5?"integrate":"rest"; }
+// When a specific roadmap item is pinned as the current task, TODAY takes on that item's
+// kind (read/xray/hunt, or reflect for an Artist's Way exercise) so today's assignment IS
+// that exact item — not just its chapter under whatever role the weekday would normally be.
+function effectiveRole(S, queues, day){
+  if(day===todayISO()){
+    if(S.focusANItemId){
+      const it = queues.an.find(x=>x.id===S.focusANItemId);
+      if(it) return it.kind==="read" ? "read" : it.drillCode===1 ? "xray" : "hunt";
+    }
+    if(S.focusAWItemId) return "reflect";
+  }
+  return dayRole(day);
+}
+const DAY_CAP = { read:30, reflect:30, xray:30, hunt:30, integrate:30, rest:0 };
+const ROLE_LABEL = { read:"MSE Chapter Reading + Core Notes", reflect:"Artist's Way Reflection / Light Study", xray:"X-Ray Scene Deconstruction", hunt:"In the Wild Pattern Hunt", integrate:"Week Integration & Schema Logging", rest:"Rest day" };
+const ROLE_KIND = { read:"anRead", reflect:"aw", xray:"anXray", hunt:"anHunt" };
+const KINDS = ["aw","anRead","anXray","anHunt"];
+
+function buildAWQueue(weeks){
+  const q=[];
+  for(const w of weeks){ for(let i=0;i<w.exCount;i++){ q.push({id:`aw:${w.week}:${i}`, week:w.week, theme:w.theme, idx:i, label:`Week ${w.week} · Exercise ${i+1}`}); } }
+  return q;
+}
+function buildMeanderQueue(chapters, drillsByChapter){
+  const q=[];
+  for(const ch of chapters){
+    q.push({id:`an:${ch.num}:read`, chapter:ch.num, name:ch.name, kind:"read", label:`Read Chapter ${ch.num} + take notes`});
+    // Only fall back to generic placeholder drills when nothing has been uploaded for this
+    // chapter yet. An explicit empty array means the chapter genuinely has zero drills
+    // (e.g. an intro/essay/conclusion) and must be respected as such, not padded out.
+    const custom = drillsByChapter ? drillsByChapter[ch.num] : undefined;
+    const drills = custom !== undefined ? custom : MEANDER_DRILL_TYPES;
+    drills.forEach((d,i)=>{
+      const code = i+1;
+      q.push({ id:`an:${ch.num}:${code}`, chapter:ch.num, name:ch.name, kind:"drill", drillCode:code, drillLabel:d.label || `Drill ${code}`, drillType:d.type || "", constraints: d.constraints, banned: d.banned });
+    });
+  }
+  return q;
+}
+function buildFictionQueue(chapters, exercisesByChapter){
+  const q=[];
+  for(const ch of chapters){
+    q.push({id:`gn:${ch.num}:read`, chapter:ch.num, title:ch.title, subtitle:ch.subtitle, kind:"read", label:`Read Chapter ${ch.num} + take notes`});
+    const custom = exercisesByChapter ? exercisesByChapter[ch.num] : undefined;
+    const exercises = custom !== undefined ? custom : FICTION_TASK_TYPES;
+    exercises.forEach((t,i)=>{
+      const code = i+1;
+      q.push({ id:`gn:${ch.num}:${code}`, chapter:ch.num, title:ch.title, subtitle:ch.subtitle, kind:"exercise", taskCode:code, taskLabel:t.label || `Exercise ${code}`, taskType:t.type || "", instructions: t.instructions });
+    });
+  }
+  return q;
+}
+
+function seedAWDone(weeks){
+  const ids=[];
+  for(const w of weeks){
+    if(w.week<4){ for(let i=0;i<w.exCount;i++) ids.push(`aw:${w.week}:${i}`); }
+    else if(w.week===4){ for(let i=0;i<Math.min(5,w.exCount);i++) ids.push(`aw:4:${i}`); }
+  }
+  return ids;
+}
+
+function buildMeanderPrompt(item){
+  const fallbackByCode = {
+    1: [
+      `Choose one scene from a work you admire — manga, anime, visual novel, film, or prose — that runs on "${item.name}".`,
+      `Map where the pattern operates: mark sentence-level (or panel/shot-level) instances separately from paragraph/sequence-level ones.`,
+      `Do not rewrite or draft anything. Submit only your annotated deconstruction: what the author did, and exactly where.`,
+    ],
+    2: [
+      `Select a 1-2 page passage from a published work.`,
+      `Identify at least 3 distinct moments where "${item.name}" operates structurally — separate sentence-level from paragraph-level instances.`,
+      `Submit annotated notes only — no rewrite, no original writing.`,
+    ],
+    3: [
+      `Find two existing examples of "${item.name}" in published or existing media: one that uses it brilliantly, one that falls flat.`,
+      `Name each source. In 2-3 sentences per example, explain precisely why one lands and the other doesn't.`,
+      `This is taste-building — observation only, nothing to draft.`,
+    ],
+  };
+  const specs = (item.constraints && item.constraints.length) ? item.constraints : (fallbackByCode[item.drillCode] || []);
+  const label = item.drillLabel || "Deconstruction";
+  return `[COACHING PROTOCOL: ANALYTICAL DECONSTRUCTION REVIEW]
+
+BOOK SUMMARY & CONTEXT:
+- Text: Meander, Spiral, Explode by Jane Alison
+- Chapter: ${item.chapter} ("${item.name}")
+- Task Type: ${label}${item.drillType ? ` — ${item.drillType}` : ""}
+
+WHAT TO DECONSTRUCT / OBSERVE:
+${specs.map((c,i)=>`- ${i+1}. ${c}`).join("\n")}
+
+MY DECONSTRUCTION NOTES FOR REVIEW:
+[Your annotated analysis goes here — no original writing required]
+
+INSTRUCTIONS FOR THE COACH:
+Assess the accuracy and depth of my analysis, not any writing craft. Did I correctly identify where and how "${item.name}" operates? Are the examples genuine instances of the technique? Push back on shallow or mislabeled observations and point me to what I missed. Conclude with either "STATUS: SCHEMA MASTERED" or "STATUS: LOOK AGAIN".`;
+}
+
+function buildFictionPrompt(item){
+  const isRead = item.taskCode===1;
+  const task = item.instructions
+    ? item.instructions
+    : (isRead
+        ? `Summarize the core technique(s) taught in this chapter, then identify and quote 2 short examples of the technique from your own recent reading.`
+        : `Apply this chapter's core technique to one scene of your current work-in-progress. Submit the revised scene below.`);
+  return `[COACHING PROTOCOL: ${isRead ? "TECHNIQUE EXTRACTION" : "ACTIVATE ADVERSARIAL CRITIQUE"}]
+
+BOOK SUMMARY & CONTEXT:
+- Text: Fiction Writer's Workshop by Josip Novakovich
+- Chapter ${item.chapter}: ${item.title} — ${item.subtitle}
+
+TASK:
+${task}
+
+${isRead ? "MY NOTES" : "MY SUBMISSION"} FOR EVALUATION:
+[Your text will go here]
+
+INSTRUCTIONS FOR THE COACH:
+${isRead ? `Check whether the summarized technique is accurately understood, and whether the two examples genuinely demonstrate it. Conclude with "STATUS: UNDERSTOOD" or "STATUS: REVIEW NEEDED".` : `Evaluate whether the technique from Chapter ${item.chapter} is convincingly applied — cite the specific lines where it succeeds or fails. Conclude with "STATUS: REWRITE REQUIRED" or "STATUS: DRILL COMPLETE".`}`;
+}
+
+function buildSyllabusPrompt(){
+  return `[TASK: GENERATE SYLLABUS JSON FOR "THE AUTO-DIDACT WRITER'S GRID"]
+
+CONTEXT:
+I use a personal web app called "The Auto-Didact Writer's Grid" to schedule daily writing practice. It runs three parallel curriculum tracks, each broken into a fixed list of weeks or chapters. I need you to output ONE JSON file describing those lists for MY books, using the exact schema below. Do not invent placeholder content — base every entry on the real table of contents of the book(s) I give you below (I'll paste the book, a photo of its contents page, or its title/edition).
+
+WHAT EACH TRACK MEANS IN THE APP:
+- "awWeeks" = a warm-up track done in 30-minute morning sessions, structured as a workbook with numbered weeks, each with a theme and a number of exercises. Source book: "The Artist's Way Workbook" by Julia Cameron (or whatever warm-up workbook I specify).
+- "meanderChapters" = a 70-minute analytical/structural-study track done on Monday/Wednesday/Friday, structured as numbered chapters, each with a short name describing its structural concept. Source book: "Meander, Spiral, Explode" by Jane Alison (or whatever craft/structure book I specify). Each chapter automatically expands in the app into 1 "read this chapter" task plus 3 analytical deconstruction tasks (X-Ray scene deconstruction, passage analysis, and an in-the-wild pattern hunt) — all analysis of existing media, never original writing.
+- "fictionChapters" = a 70-minute generative/craft-application track done on Tuesday/Thursday, structured as numbered chapters with a title and one-line subtitle. Source book: "Fiction Writer's Workshop" by Josip Novakovich (or whatever fiction-craft book I specify). Each chapter automatically expands into 1 "read this chapter" task plus 2 "apply this chapter" exercise tasks.
+
+REQUIRED JSON SCHEMA (output exactly this shape, valid JSON, no comments, no trailing commas):
+{
+  "awWeeks": [ { "week": 1, "theme": "string — this week's theme/title exactly as in the book", "exCount": 10 } ],
+  "meanderChapters": [ { "num": 1, "name": "string — chapter title exactly as in the book" } ],
+  "fictionChapters": [ { "num": 1, "title": "string — chapter title", "subtitle": "string — one-line description of what the chapter covers" } ]
+}
+
+RULES:
+- Include one array entry per week/chapter that actually exists in the book's table of contents — do not pad or omit any.
+- "exCount" for awWeeks must be the real number of numbered exercises in that week (count them from the book if you have it; ask me if you're unsure rather than guessing).
+- If I only give you one or two of the three books, only include those keys in the JSON and omit the rest — the app keeps its existing data for any track you leave out.
+- Output ONLY the JSON, in a single code block, nothing else.
+
+MY BOOK(S):
+[Paste your book/table of contents/title here before sending this prompt]`;
+}
+
+// Your real, uploaded Meander drills baked in as defaults so a fresh load on ANY
+// origin (e.g. GitHub Pages) starts populated — no re-upload needed.
+const DEFAULT_MEANDER_DRILLS = {
+  "1": [
+    {
+      "label": "Fragment & Giant",
+      "type": "Constraint sketch: working the range from smallest to largest sentence unit",
+      "constraints": [
+        "Write exactly two sentences forming one paragraph",
+        "Sentence 1 must be a single noun — no article, no modifier, no verb",
+        "Sentence 2 must be between 80 and 120 words, one unbroken grammatical unit with a single terminal period, built primarily through hypotaxis (subordinating conjunctions, dependent clauses) rather than parataxis",
+        "The noun in Sentence 1 must name the governing image that Sentence 2 elaborates — the two sentences must be about the same thing"
+      ],
+      "banned": [
+        "the word 'and' anywhere in the paragraph",
+        "semicolons",
+        "em dashes",
+        "any second period before the terminal period of Sentence 2"
+      ]
+    },
+    {
+      "label": "Scale Descent",
+      "type": "Passage analysis: controlling grammatical complexity as a sequence — Carver's simple → compound → complex → fragment pattern",
+      "constraints": [
+        "Write exactly five sentences in strict descending order of grammatical complexity: (1) complex sentence with at least one subordinating conjunction, (2) compound sentence with exactly two independent clauses joined by a coordinating conjunction, (3) simple sentence with one subject and one verb, (4) phrase fragment with no finite verb, (5) single word",
+        "All five sentences must concern the same physical object in the same room — name the object explicitly only in Sentence 1",
+        "The single word in Sentence 5 must be a noun or past-tense verb, not an adjective or adverb",
+        "Total word count across all five sentences must not exceed 80 words"
+      ],
+      "banned": [
+        "adjectives anywhere in any of the five sentences",
+        "the word 'there' as an expletive subject",
+        "naming the object again after Sentence 1"
+      ]
+    },
+    {
+      "label": "White Space Architecture",
+      "type": "Applied rewrite: using white space, line breaks, and super-short paragraphs as semantic and structural tools against your own manuscript",
+      "constraints": [
+        "Select a passage of 150–250 words from your own manuscript and rewrite it as exactly 12 standalone lines, each line its own paragraph with white space above and below",
+        "No line may exceed 10 words",
+        "Total word count across all 12 lines must not exceed 70 words — compression is mandatory",
+        "At least three of the 12 lines must be a single word or two-word phrase"
+      ],
+      "banned": [
+        "any form of the verb 'to be' (is, was, were, been, being, am, are)",
+        "repeating any noun that appears in your original manuscript passage more than once across the 12 lines",
+        "explanatory or transitional phrases (e.g., 'and then', 'after this', 'meanwhile')"
+      ]
+    }
+  ],
+  "2": [
+    {
+      "label": "Speed Menu",
+      "type": "Constraint sketch: deploying all five narrative speeds in strict sequence within a single short passage",
+      "constraints": [
+        "Write a passage of exactly five paragraphs, each operating at a different speed from Alison's menu in this strict order: (1) summary, (2) scene, (3) gap — white space only, no words at all, (4) dilation, (5) pause",
+        "The entire passage must concern a single event that takes less than five minutes of story time",
+        "Paragraphs 1, 2, 4, and 5 must each be between 20 and 50 words — no paragraph may exceed 50 words",
+        "The dilation paragraph (4) must make text time demonstrably longer than story time — at least 40 words must be spent on a moment that takes under 10 seconds in story time"
+      ],
+      "banned": [
+        "the word 'suddenly' anywhere",
+        "the word 'felt' in the pause paragraph",
+        "introducing any new character or object after the scene paragraph"
+      ]
+    },
+    {
+      "label": "Drama & Still-Spot",
+      "type": "Passage analysis: pairing a dramatic scene with a reflective dilation — Chandra's attack/counterattack and still-spot pattern",
+      "constraints": [
+        "Write exactly two paragraphs",
+        "Paragraph 1 must be a scene in real time containing at least one line of dialogue and one physical action, between 40 and 60 words",
+        "Paragraph 2 must be a dilation or pause — no new event may occur, only interiority or slowed perception — between 60 and 80 words",
+        "Paragraph 2 must refer back to a specific sensory detail from Paragraph 1 — the same detail, transformed by the character's interiority"
+      ],
+      "banned": [
+        "the word 'felt' anywhere",
+        "introducing any new character or named object in Paragraph 2",
+        "any dialogue in Paragraph 2"
+      ]
+    },
+    {
+      "label": "Single-Word Dilator",
+      "type": "Applied rewrite: isolating one word as its own sentence to dilate time and clear a glade — Wolff's 'Heat' technique applied to your own manuscript",
+      "constraints": [
+        "Select a passage of 60–100 words from your own manuscript in which a character moves through a mundane or transitional action",
+        "Rewrite the passage so that one word stands as its own isolated sentence — a single word, terminal period, its own line",
+        "The isolated word must be a concrete noun or a past-tense verb",
+        "The isolated word must not appear anywhere else in the rewritten passage",
+        "The isolated word must not be the first or last sentence of the passage"
+      ],
+      "banned": [
+        "the isolated word being an adjective, adverb, or abstract noun",
+        "using the isolated word more than once anywhere in the passage",
+        "placing the isolated word at the opening or closing position of the full passage"
+      ]
+    }
+  ],
+  "3": [
+    {
+      "label": "Color Census",
+      "type": "Constraint sketch: auditing and controlling the color palette of a passage the way Wolff controls red in The Barracks Thief",
+      "constraints": [
+        "Write a passage of exactly 150 words about a scene of tension or conflict between two people",
+        "You may use exactly one color word and it must appear exactly twice — once near the opening, once near the close",
+        "The color word must attach to a physical object both times — not to a feeling, mood, or abstraction",
+        "All other sensory texture (sound, touch, smell, temperature) must be present but no additional color words may appear"
+      ],
+      "banned": [
+        "more than one distinct color word",
+        "the color word appearing more than twice",
+        "attaching the color word to an emotion or state of mind rather than a concrete object"
+      ]
+    },
+    {
+      "label": "Chiaroscuro Switch",
+      "type": "Passage analysis: creating tonal contrast within a single sentence or paragraph — light/dark, hope/dread, elevation/collapse",
+      "constraints": [
+        "Write exactly one paragraph of 60–90 words",
+        "The paragraph must contain a single syntactic hinge — one word or conjunction (yet, although, but, until, except) — at which the tone shifts from one emotional register to its opposite",
+        "The hinge word must fall within the middle third of the paragraph — not in the first 20 words or last 20 words",
+        "Both sides of the hinge must contain at least one concrete sensory image — one image before, one after"
+      ],
+      "banned": [
+        "abstract nouns as the primary carriers of tone on either side of the hinge (use concrete images instead)",
+        "more than one hinge word",
+        "using the words 'dark', 'light', 'hope', or 'despair' anywhere"
+      ]
+    },
+    {
+      "label": "Palette Rewrite",
+      "type": "Applied rewrite: imposing a deliberate color palette on your own manuscript passage the way Sebald imposes gray-dust tone across The Emigrants",
+      "constraints": [
+        "Select a passage of 150–250 words from your own manuscript",
+        "Identify the dominant emotional tone of the passage, then assign it one color that will act as an underscore — not a symbol, but a recurring visual wash",
+        "Rewrite the passage so that the chosen color or its tonal relatives (e.g., for gray: ash, silt, dust, pallor, smoke) appear at least three times but no more than five times across the rewrite",
+        "At least one color reference must be indirect — conveyed through a non-color noun that carries the color implicitly (e.g., 'chalk', 'coal', 'rust')"
+      ],
+      "banned": [
+        "naming the emotion the color is meant to evoke (show the color, not the feeling)",
+        "using the same color word more than twice — vary through tonal relatives",
+        "adding more than 30 words to your original passage word count in the rewrite"
+      ]
+    }
+  ]
+};
+
+function defaultCurriculum(){
+  return { awWeeks: AW_WEEKS_DEFAULT, meanderChapters: MEANDER_CHAPTERS_DEFAULT, fictionChapters: FICTION_CHAPTERS_DEFAULT, meanderDrillsByChapter: {}, fictionExercisesByChapter: {} };
+}
+
+function buildDrillsPrompt(meanderChapters, fictionChapters){
+  const meanderList = meanderChapters.map(c => `  - Chapter ${c.num}: ${c.name}`).join("\n");
+  const fictionList = fictionChapters.map(c => `  - Chapter ${c.num}: ${c.title} — ${c.subtitle}`).join("\n");
+  return `[TASK: GENERATE ANALYTICAL DECONSTRUCTION SPECS FOR "THE AUTO-DIDACT WRITER'S GRID"]
+
+CONTEXT:
+I use a personal web app called "The Auto-Didact Writer's Grid" for daily craft practice. It already knows my chapter list (below). What it doesn't have yet are the per-chapter ANALYSIS ANGLES: concrete, checkable things to LOOK FOR when deconstructing existing published media. This is a taste-building / pattern-recognition curriculum — NONE of these tasks ask me to write original prose. Every task is observation and annotation of work that already exists.
+
+Example of the level of specificity required for one analysis task:
+"1. In a scene you admire, mark every place the author shifts sentence length. 2. Separate sentence-level rhythm changes from paragraph-level ones. 3. Note which shift coincides with a change in narrative speed. Do not rewrite — annotate only."
+
+WHAT TO GENERATE:
+1. For "Meander, Spiral, Explode" (Jane Alison) — EXACTLY 3 analytical tasks per chapter, escalating: (1) X-Ray Scene Deconstruction — pick one scene in existing media (manga, anime, visual novel, film, prose) that runs on the chapter's pattern and map where it operates; (2) Passage Analysis — structural breakdown of a short published excerpt; (3) In the Wild Pattern Hunt — find one brilliant and one flat example of the technique in existing media and explain the difference. No task may require writing original fiction.
+2. For "Fiction Writer's Workshop" (Josip Novakovich) — EXACTLY 2 exercises per chapter (this is my optional generative track): one "read & extract the technique" task, one "apply the technique" task against my own work-in-progress.
+
+MY CHAPTER LIST (use these exact chapters — pull real content/techniques from the actual book if you have it, don't invent generic ones):
+Meander, Spiral, Explode:
+${meanderList || "  (none loaded yet — ask me for the chapter list first)"}
+Fiction Writer's Workshop:
+${fictionList || "  (none loaded yet — ask me for the chapter list first)"}
+
+REQUIRED JSON SCHEMA (output exactly this shape, valid JSON, no comments, no trailing commas):
+{
+  "meanderDrills": [
+    { "chapter": 1, "drills": [
+        { "label": "X-Ray Scene Deconstruction", "type": "one line: what to hunt for in an existing scene", "constraints": ["what to identify / mark, step 1", "step 2", "..."], "banned": [] },
+        { "label": "Passage Analysis", "type": "...", "constraints": ["..."], "banned": [] },
+        { "label": "In the Wild Pattern Hunt", "type": "...", "constraints": ["..."], "banned": [] }
+    ] }
+  ],
+  "fictionExercises": [
+    { "chapter": 1, "exercises": [
+        { "label": "short exercise name", "type": "extraction | apply", "instructions": "1-3 sentence task the writer executes, referencing their own reading or WIP" },
+        { "label": "...", "type": "apply", "instructions": "..." }
+    ] }
+  ]
+}
+
+RULES:
+- "meanderDrills" must have exactly 3 analysis-task objects per chapter (keep the three labels above); "fictionExercises" must have exactly 2 exercise objects per chapter.
+- Every "constraints" entry for meanderDrills must be an OBSERVATION step (what to find, mark, or compare in existing media) — never an instruction to write original prose. Leave "banned" as [].
+- You can cover only a subset of chapters if that's all I need — include those chapter numbers and omit the rest (the app keeps its existing specs for any chapter you don't cover).
+- Output ONLY the JSON, in a single code block, nothing else.
+
+WHICH CHAPTERS DO YOU WANT ANALYSIS SPECS FOR RIGHT NOW?
+[Tell Claude here — e.g. "just chapter 2" or "all chapters" — before sending this prompt]`;
+}
+
+function defaultDataState(){
+  const anchor = todayISO();
+  return {
+    anchorDate: anchor,
+    curriculum: defaultCurriculum(),
+    awDone: seedAWDone(AW_WEEKS_DEFAULT),
+    anDone: ["an:1:read", "an:1:1"],
+    gnDone: [],
+    itemDates: {},
+    freewriteDone: [], cooldown1Done: [], cooldown2Done: [], vacMaintDone: [], integrationDone: [],
+    vacations: [],
+    settings: { pauseMaintOnVacation: false },
+    generativeFrozen: true,
+    schedule: {}, cursor: { aw:0, anRead:0, anXray:0, anHunt:0 }, backlog: { aw:[], anRead:[], anXray:[], anHunt:[] },
+    focusChapter: null, focusAWWeek: null, focusANItemId: null, focusAWItemId: null,
+    lastSweptDate: null,
+    shortDays: [anchor],
+  };
+}
+const PERSIST_KEYS = ["anchorDate","curriculum","awDone","anDone","gnDone","itemDates","freewriteDone","cooldown1Done","cooldown2Done","vacMaintDone","vacations","settings","schedule","cursor","backlog","lastSweptDate","shortDays","__migratedV2","generativeFrozen","__analyticalRefactor","integrationDone","__schedulerV3","focusChapter","focusAWWeek","focusANItemId","focusAWItemId"];
+
+// One-time migration: pre-rewrite saves used letter drill codes (an:1:A/B/C) and no
+// separate "read" task, so ids no longer match the current queue shape and get
+// silently dropped — making assigned tasks vanish or checkboxes seem to jump ahead.
+function migrateLegacyState(S){
+  if(!S) return S;
+  const legacyIdRe = /^an:\d+:[A-C]$/;
+  const hasLegacyIds =
+    (S.anDone||[]).some(id => legacyIdRe.test(id)) ||
+    Object.values(S.schedule||{}).some(e => (e.an||[]).some(id => legacyIdRe.test(id)));
+  if(S.__migratedV2 && !hasLegacyIds) return S;
+  const letterMap = { A:1, B:2, C:3 };
+  const chaptersWithDrillDone = new Set();
+  const newAnDone = new Set();
+  (S.anDone||[]).forEach(id=>{
+    const m = /^an:(\d+):([A-C]|[1-3]|read)$/.exec(id);
+    if(!m){ newAnDone.add(id); return; }
+    const [,ch,code] = m;
+    if(code === "read"){ newAnDone.add(id); return; }
+    const num = letterMap[code] || code;
+    newAnDone.add(`an:${ch}:${num}`);
+    chaptersWithDrillDone.add(ch);
+  });
+  chaptersWithDrillDone.forEach(ch => newAnDone.add(`an:${ch}:read`));
+  S.anDone = [...newAnDone];
+
+  const chaptersWithExerciseDone = new Set();
+  const newGnDone = new Set();
+  (S.gnDone||[]).forEach(id=>{
+    const m = /^gn:(\d+):(\d+|read)$/.exec(id);
+    if(!m){ newGnDone.add(id); return; }
+    const [,ch,code] = m;
+    newGnDone.add(id);
+    if(code !== "read") chaptersWithExerciseDone.add(ch);
+  });
+  chaptersWithExerciseDone.forEach(ch => newGnDone.add(`gn:${ch}:read`));
+  S.gnDone = [...newGnDone];
+
+  // The queue shape changed length (extra "read" task per chapter), so cached
+  // day-by-day assignments and cursors no longer line up — clear and let them
+  // regenerate cleanly against the newly-migrated done sets.
+  S.schedule = {};
+  S.cursor = { aw:0, an:0, gn:0 };
+  S.backlog = { aw:[], an:[], gn:[] };
+  S.lastSweptDate = null;
+  S.__migratedV2 = true;
+  return S;
+}
+
+// Analytical refactor migration: retire the old generative constraint-drills so the
+// analytical deconstruction task types drive the Meander track, and start in Fallow
+// (analytical) mode. Done-state — which of the 3 tasks per chapter are checked — is
+// preserved untouched; only the *content* of those tasks changes. Runs once per save.
+function migrateToAnalytical(S){
+  if(!S) return S;
+  if(S.curriculum && !S.__analyticalRefactor) S.curriculum.meanderDrillsByChapter = {};
+  S.__analyticalRefactor = true;
+  // Fiction Writer's Workshop is now a permanently dormant track — forced off on every
+  // load so the experience stays focused on The Artist's Way + Meander, Spiral, Explode.
+  S.generativeFrozen = true;
+  S.__fictionDormant = true;
+  if(!S.__schedulerV3){
+    // New analytical pacing: one role per weekday, independent MSE sub-streams (reading /
+    // X-Ray / pattern-hunt), no more freewrite/cooldown scaffolding. Wipe committed
+    // schedule/cursor/backlog — the done-sets are the source of truth and stay untouched —
+    // so the new engine regenerates cleanly from the preserved progress.
+    S.schedule = {}; S.lastSweptDate = null;
+    S.cursor = { aw:0, anRead:0, anXray:0, anHunt:0 };
+    S.backlog = { aw:[], anRead:[], anXray:[], anHunt:[] };
+    if(!Array.isArray(S.integrationDone)) S.integrationDone = [];
+    S.__schedulerV3 = true;
+  }
+  return S;
+}
+function isVacation(S, isoStr){ return S.vacations.some(v=>isoStr>=v.start && isoStr<=v.end); }
+function activeVacation(S){ const t=todayISO(); return S.vacations.find(v=>t>=v.start && t<=v.end) || null; }
+function doneKeyFor(kind){ return kind==="aw"?"awDone":"anDone"; }
+function isDone(S, kind, id){ return new Set(S[doneKeyFor(kind)]).has(id); }
+// Manual out-of-order focus: the queue index at/after which auto-assignment begins.
+// Items before it are "deferred" — never auto-scheduled, but still checkable in the
+// roadmap so you can circle back whenever you like. Null focus = index 0 = classic order.
+// Precise pin index for a track: an exact item pin (item-level focus) wins over a
+// chapter/week pin. Returns -1 when no focus is active for this kind.
+function focusPinIndex(S, queues, kind){
+  const q = queues[kind];
+  const itemId = kind==="aw" ? S.focusAWItemId : S.focusANItemId;
+  if(itemId){ const i=q.findIndex(x=>x.id===itemId); if(i>=0) return i; }
+  const focus = kind==="aw" ? S.focusAWWeek : S.focusChapter;
+  if(focus!=null){ const key = kind==="aw" ? "week" : "chapter"; const i=q.findIndex(x=>x[key]===focus); if(i>=0) return i; }
+  return -1;
+}
+function focusFloorIndex(S, queues, kind){
+  const p = focusPinIndex(S, queues, kind);
+  return p>=0 ? p : 0;
+}
+// The "current" item honoring a manual focus start point: first not-done item at/after the
+// focused chapter/week; else the earliest not-done anywhere; else the last item.
+function currentInQueue(q, doneSet, focus, key){
+  let start = 0;
+  if(focus!=null){ const i=q.findIndex(x=>x[key]===focus); if(i>=0) start=i; }
+  let c=start; while(c<q.length && doneSet.has(q[c].id)) c++;
+  if(c<q.length) return q[c];
+  c=0; while(c<q.length && doneSet.has(q[c].id)) c++;
+  return c<q.length ? q[c] : q[q.length-1];
+}
+
+// Derive "the currently outstanding, not-yet-done item per track" purely from what's
+// actually committed in the schedule through `throughISO` — this is the single source of
+// truth for "don't advance to a new task until the current one is checked off" (an
+// arbitrarily long rewrite/critique loop must never force-advance the pipeline). Deriving
+// it fresh each time (rather than persisting it) means it self-heals automatically for
+// any user, old save or new, with no migration needed.
+function derivePending(S, queues, throughISO){
+  const pending = {}; KINDS.forEach(k=>pending[k]=null);
+  let cur = parseISO(S.anchorDate);
+  const end = parseISO(throughISO);
+  while(cur <= end){
+    const day = iso(cur);
+    const entry = S.schedule[day];
+    if(entry && !entry.vac){
+      KINDS.forEach(kind => { (entry[kind]||[]).forEach(id => { pending[kind] = id; }); });
+    }
+    cur = addDays(cur,1);
+  }
+  KINDS.forEach(kind => { if(pending[kind] && isDone(S,kind,pending[kind])) pending[kind] = null; });
+  return pending;
+}
+function popNext(S, queues, kind, pending){
+  const q = queues[kind];
+  const pin = focusPinIndex(S, queues, kind);
+  const floor = pin>=0 ? pin : 0;
+  if(pending[kind]){
+    if(!isDone(S,kind,pending[kind])){
+      // Normally repeat the current task until it's checked off. But when a manual focus is
+      // active, the item to schedule is the first not-done item at/after the pinned index;
+      // a pending task that isn't that item was deferred by an out-of-order jump — skip it
+      // (it stays checkable in the roadmap) and assign the focused item instead.
+      if(pin<0) return pending[kind];
+      const doneSet = new Set(S[doneKeyFor(kind)]);
+      let c=pin; while(c<q.length && doneSet.has(q[c].id)) c++;
+      const target = c<q.length ? q[c].id : null;
+      if(target && pending[kind]===target) return pending[kind];
+      pending[kind] = null; // deferred — fall through to pop the focused item
+    } else {
+      pending[kind] = null; // just resolved — fall through to fetch the next one
+    }
+  }
+  // Prune resolved backlog items; keep deferred (below-floor) ones so they resurface if
+  // the user later moves focus back to an earlier chapter/week.
+  S.backlog[kind] = S.backlog[kind].filter(id=>!isDone(S,kind,id));
+  const backlog = S.backlog[kind];
+  const bi = backlog.findIndex(id=>q.findIndex(x=>x.id===id)>=floor);
+  if(bi>=0){ const id = backlog.splice(bi,1)[0]; pending[kind]=id; return id; }
+  if(S.cursor[kind] < floor) S.cursor[kind] = floor;
+  while(S.cursor[kind] < q.length){ const id = q[S.cursor[kind]].id; S.cursor[kind] = S.cursor[kind]+1; if(!isDone(S,kind,id)){ pending[kind]=id; return id; } }
+  return null;
+}
+function blankEntry(vac){ const e={vac}; KINDS.forEach(k=>e[k]=[]); return e; }
+function generateDay(S, queues, day, pending){
+  const vac = isVacation(S, day);
+  const entry = blankEntry(vac);
+  if(!vac){
+    const kind = ROLE_KIND[effectiveRole(S,queues,day)];
+    if(kind){ const id=popNext(S,queues,kind,pending); if(id) entry[kind].push(id); }
+  }
+  return entry;
+}
+function sweepDay(S, day){
+  const entry = S.schedule[day]; if(!entry || entry.vac) return;
+  const keep = (arr, kind) => { const remain=[]; arr.forEach(id=>{ if(isDone(S,kind,id)) remain.push(id); else S.backlog[kind].push(id); }); return remain; };
+  KINDS.forEach(k=>{ entry[k] = keep(entry[k]||[], k); });
+}
+function growScheduleTo(S, queues, throughISO){
+  const keys = Object.keys(S.schedule);
+  let cur = keys.length ? addDays(parseISO(keys.sort().pop()),1) : parseISO(S.anchorDate);
+  const end = parseISO(throughISO);
+  const pending = derivePending(S, queues, iso(addDays(cur,-1)));
+  while(cur <= end){ const day = iso(cur); if(!S.schedule[day]) S.schedule[day] = generateDay(S, queues, day, pending); cur = addDays(cur,1); }
+  let sd = S.lastSweptDate ? addDays(parseISO(S.lastSweptDate),1) : parseISO(S.anchorDate);
+  const today = parseISO(todayISO());
+  while(sd < today){ const day = iso(sd); if(S.schedule[day]) sweepDay(S, day); S.lastSweptDate = day; sd = addDays(sd,1); }
+}
+function previewForward(S, queues, fromISO, throughISO){
+  const cursor = {...S.cursor};
+  const backlog = {}; KINDS.forEach(k=>backlog[k]=[...(S.backlog[k]||[])]);
+  const pending = derivePending(S, queues, fromISO);
+  function pop(kind){
+    const q = queues[kind];
+    const floor = focusFloorIndex(S, queues, kind);
+    if(pending[kind]){
+      if(!isDone(S,kind,pending[kind])) return pending[kind];
+      pending[kind] = null;
+    }
+    backlog[kind] = backlog[kind].filter(id=>!isDone(S,kind,id));
+    const bi = backlog[kind].findIndex(id=>q.findIndex(x=>x.id===id)>=floor);
+    if(bi>=0){ const id = backlog[kind].splice(bi,1)[0]; pending[kind]=id; return id; }
+    if(cursor[kind] < floor) cursor[kind] = floor;
+    while(cursor[kind] < q.length){ const id = q[cursor[kind]].id; cursor[kind]++; if(!isDone(S,kind,id)){ pending[kind]=id; return id; } }
+    return null;
+  }
+  const map={};
+  let cur = addDays(parseISO(fromISO),1);
+  const end = parseISO(throughISO);
+  while(cur <= end){
+    const day = iso(cur);
+    const vac = isVacation(S, day);
+    const entry = blankEntry(vac);
+    if(!vac){
+      const kind = ROLE_KIND[effectiveRole(S,queues,day)];
+      if(kind){ const id=pop(kind); if(id) entry[kind].push(id); }
+    }
+    map[day]=entry;
+    cur = addDays(cur,1);
+  }
+  return map;
+}
+function resolveEntry(queues, e){
+  const r = { vac: e.vac };
+  KINDS.forEach(k=>{ r[k] = (e[k]||[]).map(id=>queues.byId[k][id]).filter(Boolean); });
+  return r;
+}
+
+function computeCompletion(S, queues, sched, day){
+  const vac = isVacation(S, day);
+  const role = effectiveRole(S, queues, day);
+  if(vac || role==="rest") return {total:0, done:0};
+  if(role==="integrate") return { total:1, done: new Set(S.integrationDone||[]).has(day)?1:0 };
+  const cell = sched[day] || {};
+  const kind = ROLE_KIND[role];
+  const doneSet = new Set(S[doneKeyFor(kind)]);
+  let total=0, done=0;
+  (cell[kind]||[]).forEach(it=>{ total+=1; if(doneSet.has(it.id)) done+=1; });
+  return {total, done};
+}
+
+class Component extends DCLogic {
+  confettiRef = React.createRef();
+  state = { ...defaultDataState(), ...this._load(), tab:"day", selectedDay: todayISO(), modalOpen:null,
+    vacStartInput: todayISO(), vacEndInput: iso(addDays(parseISO(todayISO()),6)), vacMaintInput:false,
+    retroDateInput: todayISO(), retroSelections: [], toastMsg:"", toastVisible:false, weekOffset: 0, confettiTrigger: 0, curriculumPasteValue: "" };
+
+  componentDidUpdate(prevProps){
+    if(this._lastConfettiTrigger === undefined) this._lastConfettiTrigger = this.state.confettiTrigger;
+    if(this._lastConfettiTrigger !== this.state.confettiTrigger){
+      this._lastConfettiTrigger = this.state.confettiTrigger;
+      this._fireConfetti();
+    }
+  }
+
+  _fireConfetti(){
+    const canvas = this.confettiRef.current;
+    if(!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const dpr = window.devicePixelRatio || 1;
+    const w = window.innerWidth, h = window.innerHeight;
+    canvas.width = w*dpr; canvas.height = h*dpr;
+    canvas.style.width = w+"px"; canvas.style.height = h+"px";
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    const colors = ["#c06a4c","#6f8a67","#b5883f","#e9e2d8","#2c2823"];
+    const particles = Array.from({length:130}, () => ({
+      x: Math.random()*w, y: -20 - Math.random()*h*0.3,
+      r: 4+Math.random()*4, c: colors[Math.floor(Math.random()*colors.length)],
+      vx: (Math.random()-0.5)*3, vy: 2+Math.random()*3,
+      rot: Math.random()*Math.PI*2, vr: (Math.random()-0.5)*0.3,
+      shape: Math.random()<0.5 ? "rect" : "circle",
+    }));
+    const start = performance.now();
+    const duration = 2600;
+    if(this._confettiRAF) cancelAnimationFrame(this._confettiRAF);
+    const tick = (now) => {
+      const elapsed = now - start;
+      ctx.clearRect(0,0,w,h);
+      particles.forEach(p=>{
+        p.x += p.vx; p.y += p.vy; p.vy += 0.03; p.rot += p.vr;
+        ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+        ctx.fillStyle = p.c; ctx.globalAlpha = Math.max(0, 1 - elapsed/duration);
+        if(p.shape==="rect") ctx.fillRect(-p.r,-p.r*0.4,p.r*2,p.r*0.8);
+        else { ctx.beginPath(); ctx.arc(0,0,p.r*0.6,0,Math.PI*2); ctx.fill(); }
+        ctx.restore();
+      });
+      if(elapsed < duration){ this._confettiRAF = requestAnimationFrame(tick); }
+      else { ctx.clearRect(0,0,w,h); }
+    };
+    this._confettiRAF = requestAnimationFrame(tick);
+  }
+
+  _maybeCelebrate(day){
+    const queues = this._queuesCache || this._queues();
+    const sched = this._sched || {};
+    const { total, done } = computeCompletion(this.state, queues, sched, day);
+    if(total>0 && done===total) this.setState(s => ({ confettiTrigger: (s.confettiTrigger||0)+1 }));
+  }
+
+  _load(){
+    try { const r = JSON.parse(localStorage.getItem(LS_KEY)); return migrateToAnalytical(migrateLegacyState(r)) || {}; } catch(e){ return {}; }
+  }
+  _persist(){
+    const out = {};
+    PERSIST_KEYS.forEach(k => out[k] = this.state[k]);
+    localStorage.setItem(LS_KEY, JSON.stringify(out));
+  }
+  _queues(){
+    const c = this.state.curriculum || defaultCurriculum();
+    const AWQ = buildAWQueue(c.awWeeks), ANQ = buildMeanderQueue(c.meanderChapters, c.meanderDrillsByChapter);
+    const q = { aw:AWQ, anRead:ANQ.filter(x=>x.kind==="read"), anXray:ANQ.filter(x=>x.drillCode===1), anHunt:ANQ.filter(x=>x.drillCode===3) };
+    const byId = {};
+    KINDS.forEach(k=>{ byId[k]={}; q[k].forEach(x=>byId[k][x.id]=x); });
+    return { ...q, an:ANQ, byId };
+  }
+  _rebuild(){
+    const S = this.state;
+    const queues = this._queues();
+    // Commit (pin) the schedule through whichever day is currently being viewed, not just
+    // today — otherwise a future day's task is a recomputed "preview" that can swap to a
+    // different item the instant you check it off, since checking it changes the done-set
+    // the preview is computed from.
+    const growThrough = [todayISO(), S.selectedDay, this._pinDay].filter(Boolean).reduce((a,b) => b > a ? b : a, todayISO());
+    growScheduleTo(S, queues, growThrough);
+    this._persist();
+    const preview = previewForward(S, queues, growThrough, iso(addDays(parseISO(growThrough), HORIZON_DAYS)));
+    const sched = {};
+    for(const [d,e] of Object.entries(S.schedule)) sched[d] = resolveEntry(queues, e);
+    for(const [d,e] of Object.entries(preview)) sched[d] = resolveEntry(queues, e);
+    this._sched = sched;
+    this._queuesCache = queues;
+    return { sched, queues };
+  }
+  _mutate(fn, pinDay){
+    fn(this.state);
+    this._pinDay = pinDay || null;
+    this._rebuild();
+    this._pinDay = null;
+    this.setState({...this.state});
+  }
+  _toast(msg){
+    this.setState({ toastMsg: msg, toastVisible: true });
+    clearTimeout(this._toastT);
+    this._toastT = setTimeout(()=> this.setState({ toastVisible:false }), 2200);
+  }
+
+  toggleItem(kind, id, onDate){
+    const day = onDate || todayISO();
+    const wasChecked = isDone(this.state, kind, id);
+    this._mutate(S=>{
+      const key = kind==="aw"?"awDone":kind==="an"?"anDone":"gnDone";
+      const set = new Set(S[key]);
+      if(set.has(id)){ set.delete(id); delete S.itemDates[id]; } else { set.add(id); S.itemDates[id] = onDate || todayISO(); }
+      S[key] = [...set];
+      // Always cascade everything strictly AFTER this day — the day you just toggled
+      // keeps its own displayed task (no swap under you), but anything already pinned
+      // further ahead must recompute so it doesn't stay stuck on a stale assignment.
+      this._invalidateFutureSchedule(S, day);
+    }, day);
+    if(!wasChecked && day === todayISO()) this._maybeCelebrate(day);
+  }
+  toggleDaily(field, date){
+    const wasChecked = new Set(this.state[field]).has(date);
+    this._mutate(S=>{
+      const set = new Set(S[field]);
+      if(set.has(date)) set.delete(date); else set.add(date);
+      S[field] = [...set];
+      this._invalidateFutureSchedule(S, date);
+    }, date);
+    if(!wasChecked && date === todayISO()) this._maybeCelebrate(date);
+  }
+  navDay(dir){ this.setState(s => ({ selectedDay: iso(addDays(parseISO(s.selectedDay), dir)) })); }
+  goToday(){ this.setState({ selectedDay: todayISO() }); }
+  navWeek(dir){ this.setState(s => ({ weekOffset: s.weekOffset + dir })); }
+  goThisWeek(){ this.setState({ weekOffset: 0 }); }
+  toggleGenerativeFrozen(){ this._mutate(S=>{ S.generativeFrozen = !S.generativeFrozen; }); }
+
+  // Manual out-of-order control. Setting a focus chapter/week jumps the daily assignment
+  // straight there (forward OR backward), defers any earlier unfinished items to the
+  // roadmap, and rebuilds the forward schedule cleanly. Progress in localStorage is kept.
+  setFocusChapter(ch){
+    this._mutate(S=>{
+      S.focusChapter = ch;
+      S.focusANItemId = null;
+      const today = todayISO();
+      if(S.schedule[today] && !S.schedule[today].vac) delete S.schedule[today];
+      this._invalidateFutureSchedule(S);
+      if(ch!=null){
+        const queues = this._queues();
+        ["anRead","anXray","anHunt"].forEach(k=>{ const i=queues[k].findIndex(x=>x.chapter===ch); if(i>=0) S.cursor[k]=i; S.backlog[k]=[]; });
+      }
+    });
+    this._toast(ch==null ? "Resumed automatic order" : `Now working on Chapter ${ch}`);
+  }
+  // Item-level current selection. Clicking a specific roadmap line-item pins that exact
+  // drill/read/exercise as the current task for its track; the other MSE tracks follow the
+  // same chapter so the whole chapter reads as current. Progress in localStorage is kept.
+  setFocusANItem(id){
+    this._mutate(S=>{
+      const q = this._queues();
+      const item = q.an.find(x=>x.id===id);
+      if(!item) return;
+      const kind = item.kind==="read" ? "anRead" : item.drillCode===1 ? "anXray" : "anHunt";
+      S.focusANItemId = id;
+      S.focusChapter = item.chapter;
+      const today = todayISO();
+      if(S.schedule[today] && !S.schedule[today].vac) delete S.schedule[today];
+      this._invalidateFutureSchedule(S);
+      const ci = q[kind].findIndex(x=>x.id===id); if(ci>=0) S.cursor[kind]=ci; S.backlog[kind]=[];
+      ["anRead","anXray","anHunt"].filter(k=>k!==kind).forEach(k=>{ const i=q[k].findIndex(x=>x.chapter===item.chapter); if(i>=0) S.cursor[k]=i; S.backlog[k]=[]; });
+    });
+    this._toast("Current task updated");
+  }
+  setFocusAWItem(id){
+    this._mutate(S=>{
+      const q = this._queues();
+      const item = q.aw.find(x=>x.id===id);
+      if(!item) return;
+      S.focusAWItemId = id;
+      S.focusAWWeek = item.week;
+      const today = todayISO();
+      if(S.schedule[today] && !S.schedule[today].vac) delete S.schedule[today];
+      this._invalidateFutureSchedule(S);
+      const i = q.aw.findIndex(x=>x.id===id); if(i>=0) S.cursor.aw=i; S.backlog.aw=[];
+    });
+    this._toast("Current task updated");
+  }
+  setFocusAWWeek(w){
+    this._mutate(S=>{
+      S.focusAWWeek = w;
+      S.focusAWItemId = null;
+      const today = todayISO();
+      if(S.schedule[today] && !S.schedule[today].vac) delete S.schedule[today];
+      this._invalidateFutureSchedule(S);
+      if(w!=null){
+        const queues = this._queues();
+        const i = queues.aw.findIndex(x=>x.week===w); if(i>=0) S.cursor.aw=i; S.backlog.aw=[];
+      }
+    });
+    this._toast(w==null ? "Resumed automatic order" : `Now on Artist's Way Week ${w}`);
+  }
+  clearFocus(){
+    this._mutate(S=>{
+      S.focusChapter=null; S.focusAWWeek=null; S.focusANItemId=null; S.focusAWItemId=null;
+      const today=todayISO();
+      if(S.schedule[today] && !S.schedule[today].vac) delete S.schedule[today];
+      this._invalidateFutureSchedule(S);
+    });
+    this._toast("Resumed automatic order");
+  }
+
+  openVacationModal(){ this.setState({ modalOpen:"vacation" }); }
+  openRetroModal(){ this.setState({ modalOpen:"retro", retroSelections:[] }); }
+  openSettingsModal(){ this.setState({ modalOpen:"settings" }); }
+  closeModal(){ this.setState({ modalOpen:null }); }
+
+  // Committed schedule days are normally pinned once viewed/interacted with (so a task
+  // doesn't swap under you) — but that means days already committed BEFORE a vacation is
+  // added/changed would keep their normal (non-paused) assignment even if they now fall
+  // inside the vacation window. Whenever the vacation list changes, clear committed days
+  // after today (today itself and the past stay untouched) and let them regenerate —
+  // popNext skips anything already marked done, so this is safe and lossless.
+  // Re-derive committed schedule/cursor/backlog purely by replaying history up through
+  // `boundaryDay` (defaults to today) — the boundary day itself and everything before it
+  // is left untouched (so whatever's already shown for that exact day never swaps under
+  // you), while every day strictly after it is wiped and will regenerate fresh against the
+  // corrected done-state. This is what makes "completing an item cascades everything after
+  // it forward/inward" work regardless of whether the edit was for today, a future day
+  // that was pre-browsed and pinned, or a genuinely past day (retroactive).
+  _invalidateFutureSchedule(S, boundaryDay){
+    const boundary = boundaryDay || todayISO();
+    const realToday = todayISO();
+    Object.keys(S.schedule).forEach(d => { if(d > boundary) delete S.schedule[d]; });
+    const queues = this._queues();
+    S.cursor = {}; KINDS.forEach(k=>S.cursor[k]=0);
+    S.backlog = {}; KINDS.forEach(k=>S.backlog[k]=[]);
+    let cur = parseISO(S.anchorDate);
+    const end = parseISO(boundary);
+    while(cur <= end){
+      const day = iso(cur);
+      const entry = S.schedule[day];
+      if(entry && !entry.vac){
+        KINDS.forEach(kind=>{
+          (entry[kind]||[]).forEach(id=>{
+            const idx = queues[kind].findIndex(x=>x.id===id);
+            if(idx >= 0 && idx+1 > S.cursor[kind]) S.cursor[kind] = idx+1;
+          });
+        });
+      }
+      cur = addDays(cur,1);
+    }
+    KINDS.forEach(k=>{ const f=focusFloorIndex(S,queues,k); if(S.cursor[k]<f) S.cursor[k]=f; });
+    // Backlog cascade only reflects days that have genuinely elapsed in real calendar
+    // time — always bounded by the real "today", independent of which day was edited.
+    let sd = parseISO(S.anchorDate);
+    const realEnd = parseISO(realToday);
+    while(sd < realEnd){
+      const day = iso(sd);
+      const entry = S.schedule[day];
+      if(entry && !entry.vac){
+        KINDS.forEach(kind=>{
+          const f = focusFloorIndex(S, queues, kind);
+          (entry[kind]||[]).forEach(id=>{ const idx = queues[kind].findIndex(x=>x.id===id); if(!isDone(S,kind,id) && idx>=f) S.backlog[kind].push(id); });
+        });
+      }
+      sd = addDays(sd,1);
+    }
+  }
+  addVacation(){
+    const s = this.state.vacStartInput, e = this.state.vacEndInput;
+    if(!s || !e || e<s){ this._toast("Pick a valid date range"); return; }
+    this._mutate(S=>{ S.vacations.push({start:s,end:e}); S.settings.pauseMaintOnVacation = this.state.vacMaintInput; this._invalidateFutureSchedule(S); });
+    this._toast("Vacation added — schedule shifted");
+  }
+  removeVacation(i){ this._mutate(S=>{ S.vacations.splice(i,1); this._invalidateFutureSchedule(S); }); }
+  endVacationNow(){
+    const av = activeVacation(this.state);
+    if(av){ this._mutate(S=>{ const found = S.vacations.find(v=>v.start===av.start && v.end===av.end); if(found) found.end = iso(addDays(parseISO(todayISO()),-1)); this._invalidateFutureSchedule(S); }); this._toast("Vacation ended"); }
+  }
+
+  toggleRoadmapItem(kind, id){
+    this._mutate(S=>{
+      const key = kind==="aw"?"awDone":kind==="an"?"anDone":"gnDone";
+      const set = new Set(S[key]);
+      if(set.has(id)){ set.delete(id); delete S.itemDates[id]; } else { set.add(id); S.itemDates[id] = todayISO(); }
+      S[key] = [...set];
+      // Roadmap edits are arbitrary/out-of-order (check OR uncheck, any chapter) — always
+      // drop today's committed slot too, not just when it literally contains the toggled
+      // id, since unchecking something upstream can make today's existing assignment
+      // stale/inconsistent even if today's own id didn't change.
+      const today = todayISO();
+      if(S.schedule[today] && !S.schedule[today].vac) delete S.schedule[today];
+      this._invalidateFutureSchedule(S);
+    });
+  }
+  applyRetro(){
+    const date = this.state.retroDateInput;
+    const sels = this.state.retroSelections;
+    this._mutate(S=>{
+      sels.forEach(sel=>{
+        const [kind,...rest] = sel.split(":"); const id = rest.join(":");
+        const key = kind==="aw"?"awDone":kind==="an"?"anDone":"gnDone";
+        const set = new Set(S[key]); set.add(id); S[key]=[...set]; S.itemDates[id]=date;
+      });
+      // Retro-logging isn't "check off what's displayed for this day" (unlike the Day
+      // view) — it can mark any item done for any date, so the date itself must also be
+      // free to recompute (not just what's strictly after it), in case that exact slot
+      // was already pinned to the very item just backdated.
+      this._invalidateFutureSchedule(S, iso(addDays(parseISO(date), -1)));
+    });
+    this.setState({ modalOpen:null, retroSelections:[] });
+    this._toast("Logged — schedule updated");
+  }
+  toggleRetroSel(sel){
+    const set = new Set(this.state.retroSelections);
+    if(set.has(sel)) set.delete(sel); else set.add(sel);
+    this.setState({ retroSelections:[...set] });
+  }
+
+  _copyText(text, successMsg){
+    const fallback = () => {
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.focus(); ta.select();
+        const ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+        this._toast(ok ? successMsg : "Copy failed — select and copy the text manually");
+      } catch(e){
+        this._toast("Copy failed — select and copy the text manually");
+      }
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(()=> this._toast(successMsg)).catch(fallback);
+    } else {
+      fallback();
+    }
+  }
+  copyPrompt(){
+    const text = this._currentPromptText;
+    if(text) this._copyText(text, "Prompt copied");
+  }
+  copySyllabusPrompt(){
+    this._copyText(buildSyllabusPrompt(), "Prompt copied — paste it into Claude with your book");
+  }
+  copyDrillsPrompt(){
+    const c = this.state.curriculum || defaultCurriculum();
+    this._copyText(buildDrillsPrompt(c.meanderChapters, c.fictionChapters), "Prompt copied — paste it into Claude to write real drills");
+  }
+
+  exportProgress(){
+    const out = {}; PERSIST_KEYS.forEach(k=>out[k]=this.state[k]);
+    const blob = new Blob([JSON.stringify(out,null,2)], {type:"application/json"});
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+    a.download = `writers-grid-${todayISO()}.json`; a.click(); URL.revokeObjectURL(a.href);
+    this._toast("Progress exported");
+  }
+  importProgress(e){
+    const f = e.target.files[0]; if(!f) return;
+    const r = new FileReader();
+    r.onload = () => {
+      try { const d = JSON.parse(r.result); this._mutate(S=>{ Object.assign(S, {...defaultDataState(), ...d}); }); this._toast("Progress imported"); }
+      catch(err){ this._toast("Invalid file"); }
+    };
+    r.readAsText(f); e.target.value = "";
+  }
+  importCurriculum(e){
+    const f = e.target.files[0]; if(!f) return;
+    const r = new FileReader();
+    r.onload = () => { this._applyCurriculumJSON(r.result); };
+    r.readAsText(f); e.target.value = "";
+  }
+  setCurriculumPaste(e){ this.setState({ curriculumPasteValue: e.target.value }); }
+  applyCurriculumPaste(){
+    const text = this.state.curriculumPasteValue;
+    if(!text || !text.trim()){ this._toast("Paste some JSON first"); return; }
+    this._applyCurriculumJSON(text);
+  }
+  _extractJSON(raw){
+    let text = raw.trim();
+    const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
+    if(fenced) text = fenced[1].trim();
+    else {
+      const first = text.search(/[\{\[]/);
+      if(first > 0) text = text.slice(first);
+    }
+    text = text.replace(/&amp;/g,"&").replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&lt;/g,"<").replace(/&gt;/g,">");
+    return text;
+  }
+  _applyCurriculumJSON(rawText){
+      try {
+        const text = this._extractJSON(rawText);
+        const d = JSON.parse(text);
+        this._mutate(S=>{
+          S.curriculum = {
+            ...S.curriculum,
+            awWeeks: d.awWeeks || S.curriculum.awWeeks,
+            meanderChapters: d.meanderChapters || S.curriculum.meanderChapters,
+            fictionChapters: d.fictionChapters || S.curriculum.fictionChapters,
+          };
+          if(Array.isArray(d.meanderDrills)){
+            const map = { ...(S.curriculum.meanderDrillsByChapter||{}) };
+            d.meanderDrills.forEach(entry => { if(entry && entry.chapter!=null && Array.isArray(entry.drills)) map[entry.chapter] = entry.drills; });
+            S.curriculum.meanderDrillsByChapter = map;
+          }
+          if(Array.isArray(d.fictionExercises)){
+            const map = { ...(S.curriculum.fictionExercisesByChapter||{}) };
+            d.fictionExercises.forEach(entry => { if(entry && entry.chapter!=null && Array.isArray(entry.exercises)) map[entry.chapter] = entry.exercises; });
+            S.curriculum.fictionExercisesByChapter = map;
+          }
+        });
+        this.setState({ modalOpen:null, curriculumPasteValue:"" });
+        this._toast("Syllabus/drills updated");
+      } catch(err){ this._toast("Invalid JSON"); }
+  }
+  resetAll(){
+    if(confirm("Erase all progress and start over from today?")){
+      this.state = { ...defaultDataState(), tab:"day", selectedDay: todayISO(), modalOpen:null,
+        vacStartInput: todayISO(), vacEndInput: iso(addDays(parseISO(todayISO()),6)), vacMaintInput:false,
+        retroDateInput: todayISO(), retroSelections: [], toastMsg:"", toastVisible:false, weekOffset: 0 };
+      this._rebuild();
+      this.setState({...this.state});
+      this._toast("Reset complete");
+    }
+  }
+
+  renderVals(){
+    const S = this.state;
+    const { sched, queues } = this._rebuild();
+    const day = S.selectedDay;
+    const today = todayISO();
+    const isToday = day === today;
+    const isPastDay = day < today;
+    const role = effectiveRole(S, queues, day);
+    const cap = DAY_CAP[role];
+    const capLabel = cap ? `${cap} min` : "Rest day";
+    const vac = isVacation(S, day);
+    const cell = sched[day] || {};
+    const av = activeVacation(S);
+
+    const awDoneSet = new Set(S.awDone), anDoneSet = new Set(S.anDone), gnDoneSet = new Set(S.gnDone);
+    const freewriteSet = new Set(S.freewriteDone), cd1Set = new Set(S.cooldown1Done), cd2Set = new Set(S.cooldown2Done), vacMaintSet = new Set(S.vacMaintDone);
+
+    const rowStyleBase = "display:flex;gap:12px;padding:14px;border-radius:12px;background:#fffdfa;border:1px solid #e9e2d8;cursor:pointer;";
+    const rowStyleChecked = "display:flex;gap:12px;padding:14px;border-radius:12px;background:rgba(111,138,103,0.05);border:1px solid rgba(111,138,103,0.35);cursor:pointer;";
+    function boxStyle(checked, accent){
+      const bg = checked ? "#6f8a67" : "transparent";
+      const border = checked ? "#6f8a67" : "#e9e2d8";
+      return `margin-top:2px;width:20px;height:20px;flex-shrink:0;border-radius:6px;border:2px solid ${border};background:${bg};display:flex;align-items:center;justify-content:center;`;
+    }
+    function tagStyle(color){
+      const map = { accent:["#c06a4c","rgba(192,106,76,0.1)"], sage:["#6f8a67","rgba(111,138,103,0.1)"], gold:["#b5883f","rgba(181,136,63,0.1)"] };
+      const [fg,bg] = map[color] || map.accent;
+      return `font-size:11px;font-weight:500;padding:2px 8px;border-radius:999px;color:${fg};background:${bg};`;
+    }
+    function titleStyle(checked){ return `margin:6px 0 0;font-size:14px;font-weight:500;${checked?"text-decoration:line-through;color:#8c8378;":""}`; }
+
+    const dayTasks = [];
+    let promptItem = null, promptBuilder = null;
+
+    const pushMSE = (item)=>{
+      const done = anDoneSet.has(item.id);
+      const isRead = item.kind === "read";
+      dayTasks.push({ id:item.id, checked:done, onToggle: () => this.toggleItem("an", item.id, day),
+        rowStyle: done?rowStyleChecked:rowStyleBase, boxStyle: boxStyle(done), tagStyle: tagStyle("accent"),
+        tag: `Meander · Ch. ${item.chapter}`, titleStyle: titleStyle(done),
+        title: isRead ? `Meander, Spiral, Explode — Read Ch. ${item.chapter} ("${item.name}") + take Obsidian notes` : `Meander, Spiral, Explode — Ch. ${item.chapter}: ${item.drillLabel} ("${item.name}")`,
+        hasSub:true, sub: isRead ? `Read the chapter & log core notes · ${cap} min cap` : `${item.drillType} · ${cap} min cap` });
+      if(!isRead){ promptItem = item; promptBuilder = buildMeanderPrompt; }
+    };
+
+    if(!vac && role !== "rest"){
+      if(role === "read" || role === "xray" || role === "hunt"){
+        (cell[ROLE_KIND[role]]||[]).forEach(item=>pushMSE(item));
+      } else if(role === "reflect"){
+        (cell.aw||[]).forEach(item=>{
+          const done = awDoneSet.has(item.id);
+          dayTasks.push({ id:item.id, checked:done, onToggle: () => this.toggleItem("aw", item.id, day),
+            rowStyle: done?rowStyleChecked:rowStyleBase, boxStyle: boxStyle(done), tagStyle: tagStyle("sage"),
+            tag: `Artist's Way · Week ${item.week}`, titleStyle: titleStyle(done),
+            title: `The Artist's Way — ${item.label}`, hasSub:true, sub: `${item.theme} · reflection / light study · ${cap} min cap` });
+        });
+      } else if(role === "integrate"){
+        const idone = new Set(S.integrationDone||[]).has(day);
+        dayTasks.push({ id:`int:${day}`, checked:idone, onToggle: () => this.toggleDaily("integrationDone", day),
+          rowStyle: idone?rowStyleChecked:rowStyleBase, boxStyle: boxStyle(idone), tagStyle: tagStyle("gold"),
+          tag: "Integration", titleStyle: titleStyle(idone),
+          title: "Week Integration & Schema Logging", hasSub:true, sub: `Review the week's chapter and log the schemas you mastered · ${cap} min cap` });
+      }
+    } else if(vac){
+      const maintHidden = S.settings.pauseMaintOnVacation;
+      if(!maintHidden){
+        const vd = vacMaintSet.has(day);
+        dayTasks.push({ id:`vm:${day}`, checked:vd, onToggle: () => this.toggleDaily("vacMaintDone", day),
+          rowStyle: vd?rowStyleChecked:rowStyleBase, boxStyle: boxStyle(vd), tagStyle: tagStyle("sage"),
+          tag: "Optional · Vacation", titleStyle: titleStyle(vd), title: "Light maintenance — 10 min freewrite/journal (optional)", hasSub:false, sub:"" });
+      }
+    }
+
+    const promptText = (promptItem && promptBuilder) ? promptBuilder(promptItem) : "";
+    this._currentPromptText = promptText;
+
+    const doneCount = dayTasks.filter(x=>x.checked).length;
+    const totalCount = dayTasks.length;
+    const progressPct = totalCount ? Math.round(doneCount/totalCount*100)+"%" : "0%";
+
+    // current lesson positions
+    const nextIncomplete = (q, doneSet) => { let c=0; while(c<q.length && doneSet.has(q[c].id)) c++; return c<q.length? q[c] : q[q.length-1]; };
+    const curAW = currentInQueue(queues.aw, awDoneSet, S.focusAWWeek, "week");
+    const curAN = currentInQueue(queues.an, anDoneSet, S.focusChapter, "chapter");
+    const meanderChs = S.curriculum.meanderChapters||[];
+    const curChIdx = meanderChs.findIndex(x=>x.num===curAN.chapter);
+    const stepBtn = (on)=> `width:30px;height:30px;border-radius:8px;border:1px solid #e9e2d8;background:#fffdfa;color:#6f8a67;font-size:15px;flex-shrink:0;cursor:${on?"pointer":"default"};opacity:${on?1:0.35};`;
+    const setBtnStyleFor = (active,accent)=> `font-size:10px;padding:4px 10px;border-radius:999px;border:1px solid ${active?accent:"#e9e2d8"};background:${active?"rgba(0,0,0,0.03)":"#fffdfa"};color:${active?accent:"#8c8378"};cursor:pointer;flex-shrink:0;white-space:nowrap;font-weight:500;`;
+
+    const genFrozen = !!S.generativeFrozen;
+    const scenesDeconstructed = queues.an.filter(x=>x.kind==="drill" && x.drillCode===1 && anDoneSet.has(x.id)).length;
+    const schemasMastered = queues.an.filter(x=>x.kind==="read" && anDoneSet.has(x.id)).length;
+    const moduleFocus = `Ch. ${curAN.chapter} · ${curAN.name}`;
+    const modeLabel = "◐ Analytical Mode · Fiction dormant";
+    const modePillStyle = `padding:6px 14px;border-radius:999px;font-size:12px;font-weight:500;border:1px solid rgba(111,138,103,0.4);background:rgba(111,138,103,0.12);color:#6f8a67;cursor:default;white-space:nowrap;`;
+
+    function lessonFinish(kind, matchFn){
+      let last=null;
+      for(const [d,c] of Object.entries(sched)){
+        const arr = c[kind]||[];
+        if(arr.some(matchFn)) if(!last || d>last) last=d;
+      }
+      return last;
+    }
+
+    const tabBtn = (active) => `padding:7px 16px;border-radius:999px;font-size:13px;font-weight:500;border:none;cursor:pointer;background:${active?"#c06a4c":"transparent"};color:${active?"#fffdfa":"#8c8378"};`;
+
+    // week view
+    const base = parseISO(today);
+    const wdOffset = (base.getDay()+6)%7;
+    const monday = addDays(addDays(base, -wdOffset), 7*(S.weekOffset||0));
+    const weekDayIsos = []; for(let i=0;i<7;i++) weekDayIsos.push(iso(addDays(monday,i)));
+    const weekDays = weekDayIsos.map(d=>{
+      const r = effectiveRole(S, queues, d); const isT = d===today; const past = d<today;
+      const c = sched[d] || {}; const isVac = isVacation(S,d); const wcap = DAY_CAP[r];
+      const chips = [];
+      if(!isVac && r!=="rest"){
+        if(r==="reflect"){
+          (c.aw||[]).forEach(item=>{
+            const dn = awDoneSet.has(item.id);
+            chips.push({ label:(dn?"✓ ":"")+`W${item.week} Ex.${item.idx+1}`, onToggle: ()=>this.toggleItem("aw", item.id, d),
+              style:`text-align:left;font-size:11px;padding:6px 8px;border-radius:8px;border:1px solid rgba(111,138,103,0.3);background:${dn?"rgba(111,138,103,0.1)":"#fffdfa"};color:${dn?"#8c8378":"#6f8a67"};cursor:pointer;${dn?"text-decoration:line-through;":""}` });
+          });
+        } else if(r==="integrate"){
+          const idn = new Set(S.integrationDone||[]).has(d);
+          chips.push({ label:(idn?"✓ ":"")+"Integration", onToggle: ()=>this.toggleDaily("integrationDone", d),
+            style:`text-align:left;font-size:11px;padding:6px 8px;border-radius:8px;border:1px solid rgba(181,136,63,0.3);background:${idn?"rgba(111,138,103,0.1)":"#fffdfa"};color:${idn?"#8c8378":"#b5883f"};cursor:pointer;${idn?"text-decoration:line-through;":""}` });
+        } else {
+          (c[ROLE_KIND[r]]||[]).forEach(item=>{
+            const dn = anDoneSet.has(item.id);
+            const lbl = item.kind==="read" ? "Read" : (r==="xray"?"X-Ray":"Hunt");
+            chips.push({ label:(dn?"✓ ":"")+`Ch.${item.chapter} ${lbl}`, onToggle: ()=>this.toggleItem("an", item.id, d),
+              style:`text-align:left;font-size:11px;padding:6px 8px;border-radius:8px;border:1px solid rgba(192,106,76,0.3);background:${dn?"rgba(111,138,103,0.1)":"#fffdfa"};color:${dn?"#8c8378":"#c06a4c"};cursor:pointer;${dn?"text-decoration:line-through;":""}` });
+          });
+        }
+      }
+      return {
+        colStyle: `border-radius:12px;border:1px solid ${isT?"#c06a4c":"#e9e2d8"};background:${past?"#f7f4ee":"#fffdfa"};padding:12px;min-height:150px;`,
+        dayLabelStyle: `font-size:12px;font-weight:500;margin:0;color:${isT?"#c06a4c":"#2c2823"};`,
+        dayName: parseISO(d).toLocaleDateString(undefined,{weekday:"short"}),
+        dateShort: parseISO(d).toLocaleDateString(undefined,{month:"short",day:"numeric"}),
+        typeBadgeStyle: `font-size:10px;padding:2px 6px;border-radius:6px;background:${r==="rest"?"#e9e2d8":r==="reflect"?"rgba(111,138,103,0.12)":r==="integrate"?"rgba(181,136,63,0.12)":"rgba(192,106,76,0.1)"};color:${r==="rest"?"#8c8378":r==="reflect"?"#6f8a67":r==="integrate"?"#b5883f":"#c06a4c"};`,
+        typeBadge: isVac ? "vac" : r==="rest" ? "—" : `${wcap}m`,
+        chips,
+      };
+    });
+
+    // roadmap
+    function cardStyleFor(current){ return `border-radius:14px;border:1px solid ${current?"#c06a4c":"#e9e2d8"};background:#fffdfa;overflow:hidden;`; }
+    function roadmapItemRow(checked, focus){
+      const bg = checked ? "#6f8a67" : "transparent";
+      const border = checked ? "#6f8a67" : "#e9e2d8";
+      return {
+        rowStyle: `display:flex;gap:8px;padding:6px 8px;border-radius:8px;${focus?"background:rgba(192,106,76,0.08);":""}`,
+        boxStyle: `margin-top:2px;width:16px;height:16px;flex-shrink:0;border-radius:5px;border:2px solid ${border};background:${bg};display:flex;align-items:center;justify-content:center;cursor:pointer;`,
+        labelWrapStyle: `min-width:0;flex:1;cursor:pointer;`,
+        labelStyle: `font-size:12.5px;font-weight:500;${checked?"text-decoration:line-through;color:#8c8378;":focus?"color:#c06a4c;":""}`,
+      };
+    }
+    const awRoadmap = (S.curriculum.awWeeks||[]).map(w=>{
+      const items = queues.aw.filter(x=>x.week===w.week);
+      const done = items.filter(x=>awDoneSet.has(x.id)).length;
+      const cur = w.week===curAW.week;
+      const finish = lessonFinish("aw", it=>it.week===w.week);
+      const itemRows = items.map(it=>{
+        const checked = awDoneSet.has(it.id);
+        const rowStyles = roadmapItemRow(checked, S.focusAWItemId===it.id);
+        return { id: it.id, checked, onToggle: ()=>this.toggleRoadmapItem("aw", it.id), onSetCurrent: ()=>this.setFocusAWItem(it.id), isFocusItem: S.focusAWItemId===it.id, label: `Exercise ${it.idx+1}`, hasSub:false, sub:"", ...rowStyles };
+      });
+      return { week:w.week, theme:w.theme, isCurrent:cur, cardStyle: cardStyleFor(cur),
+        onSetCurrent: ()=>this.setFocusAWWeek(w.week),
+        setBtnStyle: setBtnStyleFor(S.focusAWWeek===w.week, "#c06a4c"),
+        setBtnLabel: S.focusAWWeek===w.week ? "★ Focused" : "Set as current",
+        headerStyle: `display:flex;align-items:center;gap:10px;padding:14px;${cur?"background:rgba(192,106,76,0.05);":""}`,
+        numStyle: `width:36px;height:36px;border-radius:10px;background:${cur?"#c06a4c":"#e8eee3"};color:${cur?"#fffdfa":"#6f8a67"};display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',sans-serif;font-size:15px;flex-shrink:0;`,
+        progressLabel: `${done}/${items.length} exercises${finish?` · est. finish ${fmtShort(finish)}`:""}`,
+        items: itemRows };
+    });
+    const meanderRoadmap = (S.curriculum.meanderChapters||[]).map(ch=>{
+      const items = queues.an.filter(x=>x.chapter===ch.num && (x.kind==="read" || x.drillCode===1 || x.drillCode===3));
+      const done = items.filter(x=>anDoneSet.has(x.id)).length;
+      const cur = ch.num===curAN.chapter;
+      const finish = ["anRead","anXray","anHunt"].map(k=>lessonFinish(k, it=>it.chapter===ch.num)).filter(Boolean).sort().pop() || null;
+      const itemRows = items.map(it=>{
+        const checked = anDoneSet.has(it.id);
+        const rowStyles = roadmapItemRow(checked, S.focusANItemId===it.id);
+        const isRead = it.kind==="read";
+        return { id: it.id, checked, onToggle: ()=>this.toggleRoadmapItem("an", it.id), onSetCurrent: ()=>this.setFocusANItem(it.id), isFocusItem: S.focusANItemId===it.id,
+          label: isRead ? "Read chapter + take notes" : it.drillLabel,
+          hasSub: !isRead && !!it.drillType, sub: it.drillType || "", ...rowStyles };
+      });
+      return { chapter:ch.num, name:ch.name, isCurrent:cur, cardStyle: cardStyleFor(cur),
+        onSetCurrent: ()=>this.setFocusChapter(ch.num),
+        setBtnStyle: setBtnStyleFor(S.focusChapter===ch.num, "#6f8a67"),
+        setBtnLabel: S.focusChapter===ch.num ? "★ Focused" : "Set as current",
+        headerStyle: `display:flex;align-items:center;gap:10px;padding:14px;${cur?"background:rgba(111,138,103,0.05);":""}`,
+        numStyle: `width:36px;height:36px;border-radius:10px;background:${cur?"#6f8a67":"#f3e6df"};color:${cur?"#fffdfa":"#c06a4c"};display:flex;align-items:center;justify-content:center;font-family:'Zen Maru Gothic',sans-serif;font-size:15px;flex-shrink:0;`,
+        progressLabel: `${done}/${items.length} scheduled tasks (read · X-Ray · hunt)${finish?` · est. finish ${fmtShort(finish)}`:""}`,
+        items: itemRows };
+    });
+
+    // retro upcoming
+    const retroUpcoming = [];
+    let cAw=0; while(cAw<queues.aw.length && awDoneSet.has(queues.aw[cAw].id)) cAw++;
+    const anScheduled = queues.an.filter(x=>x.kind==="read" || x.drillCode===1 || x.drillCode===3);
+    let cAn=0; while(cAn<anScheduled.length && anDoneSet.has(anScheduled[cAn].id)) cAn++;
+    queues.aw.slice(cAw,cAw+4).forEach(it=>{ const sel=`aw:${it.id}`; retroUpcoming.push({ id:sel, checked:S.retroSelections.includes(sel), onToggle:()=>this.toggleRetroSel(sel), label:`AW · ${it.label}` }); });
+    anScheduled.slice(cAn,cAn+4).forEach(it=>{ const sel=`an:${it.id}`; retroUpcoming.push({ id:sel, checked:S.retroSelections.includes(sel), onToggle:()=>this.toggleRetroSel(sel), label:`Meander · Ch.${it.chapter} ${it.kind==="read"?"Read":it.drillLabel}` }); });
+
+    const vacationList = S.vacations.map((v,i)=>({ label: `${fmtShort(v.start)} → ${fmtShort(v.end)} (${daysBetween(v.start,v.end)+1}d)`, onRemove: ()=>this.removeVacation(i) }));
+
+    return {
+      headerDateText: fmtLong(today),
+      tab: S.tab, isDayTab: S.tab==="day", isWeekTab: S.tab==="week", isRoadmapTab: S.tab==="roadmap",
+      setTabDay: ()=>this.setState({tab:"day"}), setTabWeek: ()=>this.setState({tab:"week"}), setTabRoadmap: ()=>this.setState({tab:"roadmap"}),
+      tabDayStyle: tabBtn(S.tab==="day"), tabWeekStyle: tabBtn(S.tab==="week"), tabRoadmapStyle: tabBtn(S.tab==="roadmap"),
+
+      vacActive: !!av,
+      vacBannerText: av ? `Normal tracking resumes in ${daysBetween(today, av.end)+1} day(s) (${fmtShort(av.end)}). Lessons are shifting forward automatically.` : "",
+      endVacationNow: ()=>this.endVacationNow(),
+
+      dayHeading: isToday ? "Today" : fmtShort(day),
+      isToday, isPastDay,
+      dayDateLong: fmtLong(day),
+      budgetLabel: capLabel,
+      sessionCapLabel: capLabel,
+      roleLabel: ROLE_LABEL[role],
+      showCapBanner: !vac && role!=="rest",
+      isShortenedToday: false,
+      navDayPrev: ()=>this.navDay(-1), navDayNext: ()=>this.navDay(1), goToday: ()=>this.goToday(),
+      showTodayBtn: !isToday,
+      todayBtnStyle: `font-size:12px;padding:6px 12px;border-radius:999px;border:1px solid #e9e2d8;background:transparent;color:#8c8378;cursor:${isToday?"default":"pointer"};flex-shrink:0;visibility:${isToday?"hidden":"visible"};`,
+      isRestDay: role==="rest" && !vac,
+      isVacationDay: vac,
+      vacMaintNote: S.settings.pauseMaintOnVacation ? "Optional maintenance is paused too." : "Optional light maintenance is still available below.",
+
+      dayTasks,
+      showPromptStation: !!promptItem,
+      promptText,
+      copyPrompt: ()=>this.copyPrompt(),
+
+      doneCount, totalCount, progressPct,
+      scenesDeconstructed, schemasMastered, moduleFocus, modeLabel, modePillStyle,
+      generativeFrozen: genFrozen, fictionUnfrozen: !genFrozen,
+      showGenerativeFrozenNotice: false,
+      genBudgetLabel: "Dormant",
+      toggleGenerativeFrozen: ()=>this.toggleGenerativeFrozen(),
+      currentAWWeek: curAW.week, currentAWTheme: curAW.theme,
+      currentMeanderCh: curAN.chapter, currentMeanderName: curAN.name,
+      focusChapterNum: curAN.chapter, focusChapterName: curAN.name,
+      focusPrevCh: ()=> (curChIdx>0 ? this.setFocusChapter(meanderChs[curChIdx-1].num) : null),
+      focusNextCh: ()=> (curChIdx>=0 && curChIdx<meanderChs.length-1 ? this.setFocusChapter(meanderChs[curChIdx+1].num) : null),
+      focusPrevStyle: stepBtn(curChIdx>0),
+      focusNextStyle: stepBtn(curChIdx>=0 && curChIdx<meanderChs.length-1),
+      isManualFocus: S.focusChapter!=null || S.focusAWWeek!=null || S.focusANItemId!=null || S.focusAWItemId!=null,
+      clearFocus: ()=>this.clearFocus(),
+
+      weekRangeLabel: `${fmtShort(weekDayIsos[0])} – ${fmtShort(weekDayIsos[6])}`,
+      weekDays,
+      weekPrev: ()=>this.navWeek(-1), weekNext: ()=>this.navWeek(1), weekGoToday: ()=>this.goThisWeek(),
+      weekTodayBtnStyle: `font-size:12px;padding:6px 12px;border-radius:999px;border:1px solid #e9e2d8;background:transparent;color:#8c8378;cursor:${(S.weekOffset||0)===0?"default":"pointer"};flex-shrink:0;visibility:${(S.weekOffset||0)===0?"hidden":"visible"};margin-left:8px;`,
+
+      awRoadmap, meanderRoadmap,
+
+      openVacationModal: ()=>this.openVacationModal(), openRetroModal: ()=>this.openRetroModal(), openSettingsModal: ()=>this.openSettingsModal(),
+      exportProgress: ()=>this.exportProgress(), importProgress: (e)=>this.importProgress(e), resetAll: ()=>this.resetAll(),
+
+      modalOpen: !!S.modalOpen, isVacationModal: S.modalOpen==="vacation", isRetroModal: S.modalOpen==="retro", isSettingsModal: S.modalOpen==="settings",
+      closeModal: ()=>this.closeModal(),
+
+      vacStartInput: S.vacStartInput, vacEndInput: S.vacEndInput, vacMaintInput: S.vacMaintInput,
+      setVacStart: (e)=>this.setState({vacStartInput:e.target.value}), setVacEnd: (e)=>this.setState({vacEndInput:e.target.value}),
+      toggleVacMaintInput: ()=>this.setState({vacMaintInput:!this.state.vacMaintInput}),
+      addVacation: ()=>this.addVacation(), vacationList, noVacations: S.vacations.length===0,
+
+      retroDateInput: S.retroDateInput, setRetroDate: (e)=>this.setState({retroDateInput:e.target.value}),
+      retroUpcoming, applyRetro: ()=>this.applyRetro(),
+
+      importCurriculum: (e)=>this.importCurriculum(e),
+      copySyllabusPrompt: ()=>this.copySyllabusPrompt(), syllabusCopyLabel: "Copy Claude prompt (chapter syllabus)",
+      copyDrillsPrompt: ()=>this.copyDrillsPrompt(), drillsCopyLabel: "Copy Claude prompt (write the drills)",
+      curriculumPasteValue: S.curriculumPasteValue, setCurriculumPaste: (e)=>this.setCurriculumPaste(e), applyCurriculumPaste: ()=>this.applyCurriculumPaste(),
+
+      toastVisible: S.toastVisible, toastMsg: S.toastMsg,
+      confettiCanvasRef: this.confettiRef,
+    };
+  }
+}
+
+</script>
+</body>
+</html>
